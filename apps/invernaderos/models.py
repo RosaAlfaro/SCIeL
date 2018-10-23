@@ -3,7 +3,7 @@ from django.db import models
 
 class Actuador(models.Model):
     nombre = models.CharField(
-        max_lenght=45
+        max_length=45
     )
     activado = models.BooleanField(
         verbose_name='Activado', 
