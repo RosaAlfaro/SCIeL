@@ -57,7 +57,7 @@ class Etapa(models.Model):
         blank=False
     )
     descripcion = models.CharField(
-        max=150
+        max_length=150
     )
     cultivo = models.ForeignKey(
         Cultivo,
