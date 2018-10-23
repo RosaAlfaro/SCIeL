@@ -26,9 +26,6 @@ class Cultivo(models.Model):
     )
     periodo_cosecha = models.IntegerField(
         verbose_name='Periódo de Cosecha',
-        max_length=3,
-        null=False,
-        blank=False
     )
 
     def __str__(self):
@@ -44,7 +41,6 @@ class Cultivo(models.Model):
 class Etapa(models.Model):
     numero = models.IntegerField(
         verbose_name='Número', 
-        max_length=3, 
         blank=False
     )
     nombre = models.CharField(
@@ -52,9 +48,7 @@ class Etapa(models.Model):
     )
     duracion = models.IntegerField(
         verbose_name='Duración de la etapa', 
-        max_length=5, 
-        null=False, 
-        blank=False
+        null=False
     )
     descripcion = models.CharField(
         max_length=150
@@ -96,7 +90,8 @@ class Sensor(models.Model):
 class Medicion(models.Model):
     magnitud = models.DecimalField(
         verbose_name='Magnitud',
-        decimal_places=2
+        decimal_places=2,
+        max_digits=5
     )
     referencia = models.BooleanField(
         verbose_name='¿Es la referencia?',
