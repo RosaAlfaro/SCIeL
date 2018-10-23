@@ -2,7 +2,10 @@ from django.db import models
 
 
 class Actuador(models.Model):
-    nombre = models.CharField(max=45, null=False)
+    nombre = models.CharField(
+        max_lenght=45, 
+        null=False
+    )
     activado = models.BooleanField(
         verbose_name='Activado', 
         name='Activado', 
@@ -20,7 +23,7 @@ class Actuador(models.Model):
 
 class Cultivo(models.Model):
     nombre = models.CharField(
-        max=45, 
+        max_lenght=45,  
         null=False,
     )
     periodo_cosecha = models.IntegerField(
@@ -48,7 +51,7 @@ class Etapa(models.Model):
         blank=False
     )
     nombre = models.CharField(
-        max=45, 
+        max_lenght=45, 
         null=False,
     )
     duracion = models.IntegerField(
@@ -78,7 +81,7 @@ class Etapa(models.Model):
 
 class Parametro(models.Model):
     nombre = models.CharField(
-        max=45, 
+        max_lenght=45, 
         null=False,
     )
 
@@ -93,7 +96,7 @@ class Parametro(models.Model):
 
 class Sensor(models.Model):
     nombre = models.CharField(
-        max=45, 
+        max_lenght=45, 
         null=False
     )
 
@@ -113,6 +116,6 @@ class Medicion(models.Model):
     )
 
 class Invernadero(models.Model):
-    nombre = models.CharField(max=45, null=False)
-    ubicacion = models.CharField(max=15, null=False)
+    nombre = models.CharField(max_lenght=45,  null=False)
+    ubicacion = models.CharField(max_lenght=15,  null=False)
 
