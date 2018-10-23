@@ -22,8 +22,7 @@ class Actuador(models.Model):
 
 class Cultivo(models.Model):
     nombre = models.CharField(
-        max_lenght=45,  
-        null=False,
+        max_length=45
     )
     periodo_cosecha = models.IntegerField(
         verbose_name='Periódo de Cosecha',
@@ -46,12 +45,10 @@ class Etapa(models.Model):
     numero = models.IntegerField(
         verbose_name='Número', 
         max_length=3, 
-        null=False, 
         blank=False
     )
     nombre = models.CharField(
-        max_lenght=45, 
-        null=False,
+        max_length=45
     )
     duracion = models.IntegerField(
         verbose_name='Duración de la etapa', 
@@ -60,8 +57,7 @@ class Etapa(models.Model):
         blank=False
     )
     descripcion = models.CharField(
-        max=150,
-        null=False
+        max=150
     )
     cultivo = models.ForeignKey(
         Cultivo,
@@ -80,8 +76,7 @@ class Etapa(models.Model):
 
 class Parametro(models.Model):
     nombre = models.CharField(
-        max_lenght=45, 
-        null=False,
+        max_length=45
     )
 
     def __str__(self):
@@ -95,8 +90,7 @@ class Parametro(models.Model):
 
 class Sensor(models.Model):
     nombre = models.CharField(
-        max_lenght=45, 
-        null=False
+        max_length=45 
     )
 
 class Medicion(models.Model):
@@ -115,6 +109,6 @@ class Medicion(models.Model):
     )
 
 class Invernadero(models.Model):
-    nombre = models.CharField(max_lenght=45,  null=False)
-    ubicacion = models.CharField(max_lenght=15,  null=False)
+    nombre = models.CharField(max_length=45)
+    ubicacion = models.CharField(max_length=15)
 
