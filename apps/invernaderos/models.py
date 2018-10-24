@@ -6,8 +6,8 @@ class Actuador(models.Model):
         max_length=45
     )
     activado = models.BooleanField(
-        verbose_name='Activado', 
-        name='Activado', 
+        verbose_name='Activado',
+        name='Activado',
         null=False
     )
 
@@ -30,7 +30,6 @@ class Cultivo(models.Model):
 
     def __str__(self):
         return self.nombre
-    
 
     class Meta:
         ordering = ['nombre']
@@ -40,14 +39,14 @@ class Cultivo(models.Model):
 
 class Etapa(models.Model):
     numero = models.IntegerField(
-        verbose_name='Número', 
+        verbose_name='Número',
         blank=False
     )
     nombre = models.CharField(
         max_length=45
     )
     duracion = models.IntegerField(
-        verbose_name='Duración de la etapa', 
+        verbose_name='Duración de la etapa',
         null=False
     )
     descripcion = models.CharField(
@@ -60,7 +59,6 @@ class Etapa(models.Model):
 
     def __str__(self):
         return self.nombre
-
 
     class Meta:
         ordering = ["cultivo", "numero", "nombre"]
@@ -84,8 +82,9 @@ class Parametro(models.Model):
 
 class Sensor(models.Model):
     nombre = models.CharField(
-        max_length=45 
+        max_length=45
     )
+
 
 class Medicion(models.Model):
     magnitud = models.DecimalField(
@@ -103,7 +102,7 @@ class Medicion(models.Model):
         auto_now_add=True
     )
 
+
 class Invernadero(models.Model):
     nombre = models.CharField(max_length=45)
     ubicacion = models.CharField(max_length=15)
-
