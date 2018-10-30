@@ -4,4 +4,4 @@ from django.contrib.auth import authenticate, login
 def login(request):
     usuario = request.POST['username']
     contraseña = request.POST['password']
-    user = authenticate(request, username=us)
+    user = authenticate(request, username=usuario)
