@@ -1,8 +1,33 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.contrib.auth.models import User
+from django.dispatch import receiver
+
+
+class Usuario(models.Model):
+    usuario = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE,
+        verbose_name='Usuario'
+    )
+
+    def __str__(self):
+        return self.usuario.username
+    
+    @receiver(post_save, sender=User)
+    def crear_usuario(self, sender, instance, created, **kwargs):
+        if created:
+            Usuario.objects.create(usuario=instance)
+
+    @receiver(post_save, sender=User)
+    def guardar_usuario(self, sender, instance, **kwargs):
+        instance.Usuario.save()
+
 
 class Cultivo(models.Model):
     id_cultivo = models.AutoField(
-        primary_key=True
+        primary_key=True,
+        verbose_name='Codigo del cultivo'
     )
     nombre_cultivo = models.CharField(
         max_length=45,
@@ -24,11 +49,13 @@ class Cultivo(models.Model):
 
 class Etapa(models.Model):
     id_etapa = models.AutoField(
-        primary_key=True
+        primary_key=True,
+        verbose_name='Codigo de la etapa'
     )
     id_cultivo = models.ForeignKey(
         Cultivo,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        verbose_name='Cultivo'
     )
     numero_etapa = models.IntegerField(
         verbose_name='Número de etapa',
@@ -45,7 +72,8 @@ class Etapa(models.Model):
         null=False
     )
     descripcion_etapa = models.CharField(
-        max_length=150
+        max_length=150,
+        verbose_name='Descripcion de la etapa'
     )
 
     def __str__(self):
@@ -59,14 +87,17 @@ class Etapa(models.Model):
 
 class Parametro(models.Model):
     id_parametro = models.AutoField(
-        primary_key=True
+        primary_key=True,
+        verbose_name='Codigo del parámetro'
     )
     nombre_parametro = models.CharField(
-        max_length=45
+        max_length=45,
+        verbose_name='Nombre del parámetro'
     )
     id_cultivo = models.ForeignKey(
         Cultivo,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        verbose_name='Cultivo'
     )
 
     def __str__(self):
@@ -80,17 +111,26 @@ class Parametro(models.Model):
 
 class Invernadero(models.Model):
     id_invernadero = models.AutoField(
-        primary_key=True
+        primary_key=True,
+        verbose_name='Codigo del invernadero'
+    )
+    id_usuario = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        verbose_name='Usuario'
     )
     id_cultivo = models.ForeignKey(
         Cultivo,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        verbose_name='Cultivo'
     )
     nombre_invernadero = models.CharField(
-        max_length=45
+        max_length=45,
+        verbose_name='Nombre del invernadero'
     )
     ubicacion = models.CharField(
-        max_length=15
+        max_length=15,
+        verbose_name='Ubicacion del invernadero'
     )
 
     def __str__(self):
@@ -104,17 +144,21 @@ class Invernadero(models.Model):
 
 class Dispositivo(models.Model):
     id_dispositivo = models.AutoField(
-        primary_key=True
+        primary_key=True,
+        verbose_name='Codigo del dispositivo'
     )
     id_invernadero = models.OneToOneField(
         Invernadero,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        verbose_name='Invernadero'
     )
     nombre_dispositivo = models.CharField(
-        max_length=45
+        max_length=45,
+        verbose_name='Nombre del dispositivo'
     )
     estado_dispositivo = models.CharField(
-        max_length=45
+        max_length=45,
+        verbose_name='Estado del dispositivo'
     )
 
     def __str__(self):
@@ -127,17 +171,21 @@ class Dispositivo(models.Model):
 
 class Actuador(models.Model):
     id_actuador = models.AutoField(
-        primary_key=True
+        primary_key=True,
+        verbose_name='Codigo del Actuador'
     )
     id_dispositivo = models.ForeignKey(
         Dispositivo,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        verbose_name='Dispositivo'
     )
     nombre_actuador = models.CharField(
-        max_length=45
+        max_length=45,
+        verbose_name='Nombre del Actuador'
     )
     is_activo = models.BooleanField(
-        default=False
+        default=False,
+        verbose_name='¿Está activo?'
     )
 
     def __str___(self):
@@ -151,14 +199,17 @@ class Actuador(models.Model):
 
 class Sensor(models.Model):
     id_sensor = models.AutoField(
-        primary_key=True
+        primary_key=True,
+        verbose_name='Codigo del sensor'
     )
     id_dispositivo = models.ForeignKey(
         Dispositivo,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        verbose_name='Dispositivo'
     )
     nombre_sensor = models.CharField(
-        max_length=45
+        max_length=45,
+        verbose_name='Nombre del sensor'
     )
 
     def __str__(self):
@@ -172,29 +223,34 @@ class Sensor(models.Model):
 
 class Medicion(models.Model):
     id_medicion = models.AutoField(
-        primary_key=True
+        primary_key=True,
+        verbose_name='Codigo de la medición'
     )
     id_cultivo = models.ForeignKey(
         Cultivo,
-        on_delete=models.DO_NOTHING
+        on_delete=models.DO_NOTHING,
+        verbose_name='Cultivo'
     )
     id_parametro = models.ForeignKey(
         Parametro,
-        on_delete=models.DO_NOTHING
+        on_delete=models.DO_NOTHING,
+        verbose_name='Parámetro'
     )
     id_sensor = models.ForeignKey(
         Sensor,
-        on_delete=models.DO_NOTHING
+        on_delete=models.DO_NOTHING,
+        verbose_name='Sensor'
     )
     id_actuador = models.ForeignKey(
         Actuador,
         on_delete=models.DO_NOTHING,
-        null=True
+        null=True,
+        verbose_name='Actuador'
     )
     magnitud_medicion = models.DecimalField(
-        verbose_name='Magnitud',
         decimal_places=2,
-        max_digits=5
+        max_digits=5,
+        verbose_name='Magnitud de la medición'
     )
     fecha_medicion = models.DateTimeField(
         verbose_name='Fecha de lectura',

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}SCIeL | Iniciar Sesión{% endblock %}
+{% block content %}
+  {% load static from staticfiles  %}
+  <header class="py-5 bg-image-full bg-dark" style='background-image: url("../static/invernaderos/media/image/CE - UES.JPG");'>
+    <img class="img-fluid d-block mx-auto" src="{% static 'media/image/logo.png' %}" alt="" width="250" height="250">
+
+        <div class="card card-login mx-auto mt-5">
+          <div class="card-header">Login</div>
+            <div class="card-body form-group form-label-group">
+              <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <a class="btn btn-primary btn-block" href="gestionarInvernaderos.html" name="submit">Login</a>
+              </form>
+            </div>
+          </div>
+        </div>
+      
+  </header>
+{% endblock content %}
