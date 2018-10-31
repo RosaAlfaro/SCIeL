@@ -59,7 +59,9 @@ ROOT_URLCONF = 'SCIeL.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,8 +123,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+LOGIN_URL = '/sign-in/'
+
+LOGIN_REDIRECT_URL = '/invernaderos/'
+
+LOGOUT_REDIRECT_URL = '/sign-in/'
+
+MEDIA_URL = '/media/'
+
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static', 'invernaderos', 'media'),
+    
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static', 'invernaderos')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
