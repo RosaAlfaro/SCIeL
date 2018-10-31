@@ -23,15 +23,17 @@ class SignUpView(LoginRequiredMixin, CreateView):
         usuario = form.cleaned_data.get('username')
         password = form.cleaned_date.get('password1')
         usuario = authenticate(username=usuario, password=password)
+        mensaje=None
         if(not usuario.is_authenticated):
+            mensaje = 'Credenciales erróneas'
             context = {
-                'mensaje': 'Credenciales erróneas',
+                'mensaje': mensaje,
                 'form': form
                 }
             return render(form.request, 'invernaderos/inciarSesion.html', context=context)
         else:
             login(self.request, usuario)
-            return redirect('')
+            return redirect('/')
 
 
 class SignInView(LoginView):
