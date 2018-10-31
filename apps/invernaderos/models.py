@@ -4,26 +4,6 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 
 
-class Usuario(models.Model):
-    usuario = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE,
-        verbose_name='Usuario'
-    )
-
-    def __str__(self):
-        return self.usuario.username
-    
-    @receiver(post_save, sender=User)
-    def create_usuario(self, sender, instance, created, **kwargs):
-        if created:
-            Usuario.objects.create(usuario=instance)
-
-    @receiver(post_save, sender=User)
-    def save_usuario(self, sender, instance, **kwargs):
-        instance.Usuario.save()
-
-
 class Cultivo(models.Model):
     id_cultivo = models.AutoField(
         primary_key=True,
@@ -109,13 +89,41 @@ class Parametro(models.Model):
         verbose_name_plural = "Parámetros"
 
 
+class Dispositivo(models.Model):
+    id_dispositivo = models.AutoField(
+        primary_key=True,
+        verbose_name='Codigo del dispositivo'
+    )
+    nombre_dispositivo = models.CharField(
+        max_length=45,
+        verbose_name='Nombre del dispositivo'
+    )
+    estado_dispositivo = models.CharField(
+        max_length=45,
+        verbose_name='Estado del dispositivo'
+    )
+
+    def __str__(self):
+        return self.nombre_dispositivo
+
+    class Meta:
+        ordering = ["id_dispositivo"]
+        verbose_name = "Dispositivo"
+        verbose_name_plural = "Dispositivos"
+
+
 class Invernadero(models.Model):
     id_invernadero = models.AutoField(
         primary_key=True,
         verbose_name='Codigo del invernadero'
     )
+    id_dispositivo = models.ForeignKey(
+        Dispositivo,
+        on_delete=models.DO_NOTHING,
+        verbose_name='Dispositivo'
+    )
     id_usuario = models.ForeignKey(
-        Usuario,
+        User,
         on_delete=models.CASCADE,
         verbose_name='Usuario'
     )
@@ -141,33 +149,6 @@ class Invernadero(models.Model):
         verbose_name = "Invernadero"
         verbose_name_plural = "Invernaderos"
 
-
-class Dispositivo(models.Model):
-    id_dispositivo = models.AutoField(
-        primary_key=True,
-        verbose_name='Codigo del dispositivo'
-    )
-    id_invernadero = models.OneToOneField(
-        Invernadero,
-        on_delete=models.CASCADE,
-        verbose_name='Invernadero'
-    )
-    nombre_dispositivo = models.CharField(
-        max_length=45,
-        verbose_name='Nombre del dispositivo'
-    )
-    estado_dispositivo = models.CharField(
-        max_length=45,
-        verbose_name='Estado del dispositivo'
-    )
-
-    def __str__(self):
-        return self.nombre_dispositivo
-
-    class Meta:
-        ordering = ["id_invernadero"]
-        verbose_name = "Dispositivo"
-        verbose_name_plural = "Dispositivos"
 
 class Actuador(models.Model):
     id_actuador = models.AutoField(
