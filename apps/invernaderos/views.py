@@ -31,7 +31,7 @@ class SignUpView(LoginRequiredMixin, CreateView):
             return render(form.request, 'invernaderos/inciarSesion.html', context=context)
         else:
             login(self.request, usuario)
-            return redirect('/invernaderos')
+            return redirect('')
 
 
 class SignInView(LoginView):
