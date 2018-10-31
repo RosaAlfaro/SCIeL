@@ -15,12 +15,12 @@ class Usuario(models.Model):
         return self.usuario.username
     
     @receiver(post_save, sender=User)
-    def crear_usuario(self, sender, instance, created, **kwargs):
+    def create_usuario(self, sender, instance, created, **kwargs):
         if created:
             Usuario.objects.create(usuario=instance)
 
     @receiver(post_save, sender=User)
-    def guardar_usuario(self, sender, instance, **kwargs):
+    def save_usuario(self, sender, instance, **kwargs):
         instance.Usuario.save()
 
 

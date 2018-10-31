@@ -9,6 +9,7 @@ class LoginForm(AuthenticationForm):
         max_length=20,
         required=True
     )
+    
     first_name = forms.CharField(
         max_length=50,
         required=True
@@ -31,4 +32,5 @@ class LoginForm(AuthenticationForm):
             'password1',
             'password2',
         )
+        
     
