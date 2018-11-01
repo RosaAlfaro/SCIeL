@@ -10,27 +10,29 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 
 
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, TemplateView 
 
 from .forms import LoginForm, SignUpForm
 
 class SignUpView(LoginRequiredMixin, CreateView):
     model = User
-    form_class = SignUpForm
+    form_class = LoginForm
 
     def form_valid(self, form):
         form.save()
         usuario = form.cleaned_data.get('username')
         password = form.cleaned_date.get('password1')
         usuario = authenticate(username=usuario, password=password)
-        mensaje=None
         if(not usuario.is_authenticated):
-            mensaje = 'Credenciales erróneas'
-            context = {
-                'mensaje': mensaje,
-                'form': form
+            message = "Los datos ingresados son erróneos"
+            return render(
+                form.request,
+                'invernaderos/inciarSesion.html', 
+                context={
+                    'form':form,
+                    'message': message
                 }
-            return render(form.request, 'invernaderos/inciarSesion.html', context=context)
+            )
         else:
             login(self.request, usuario)
             return redirect('/')

@@ -1,3 +1,5 @@
+from models import * 
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
@@ -52,5 +54,17 @@ class LoginForm(AuthenticationForm):
             'password1',
             'password2',
         )
-        
-    
+
+
+class InvernaderoForm(forms.ModelForm):
+
+    class Meta:
+        model = Invernadero
+        fields = (
+            'id_invernadero',
+            'id_dispositivo',
+            'id_usuario',
+            'id_cultivo',
+            'nombre_invernadero',
+            'ubicacion'
+            )
