@@ -45,3 +45,7 @@ class SignOutView(LoginRequiredMixin, LogoutView):
 
 class InicioView(LoginRequiredMixin, TemplateView):
     template_name = 'invernaderos/gestionarInvernaderos.html'
+
+
+def index(request):
+    redirect('invernaderos/')
