@@ -7,7 +7,11 @@ from django.dispatch import receiver
 class Cultivo(models.Model):
     id_cultivo = models.AutoField(
         primary_key=True,
-        verbose_name='Codigo del cultivo'
+        verbose_name='Codigo del cultivo',
+        help_text = 'Identificador genérico del cultivo',
+        error_messages = {
+            'exist': 'El indentificador ya existe'
+        }
     )
     nombre_cultivo = models.CharField(
         max_length=45,
@@ -30,12 +34,17 @@ class Cultivo(models.Model):
 class Etapa(models.Model):
     id_etapa = models.AutoField(
         primary_key=True,
-        verbose_name='Codigo de la etapa'
+        verbose_name='Codigo de la etapa',
+        help_text = 'Identificador genérico de la Etapa',
+        error_messages = {
+            'exist': 'El indentificador ya existe',
+        }
     )
     id_cultivo = models.ForeignKey(
         Cultivo,
         on_delete=models.CASCADE,
-        verbose_name='Cultivo'
+        verbose_name='Cultivo',
+        help_text = 'Cultivo al que pertenece esta etapa',
     )
     numero_etapa = models.IntegerField(
         verbose_name='Número de etapa',
@@ -63,30 +72,6 @@ class Etapa(models.Model):
         ordering = ["id_cultivo", "numero_etapa"]
         verbose_name = "Etapa"
         verbose_name_plural = "Etapas"
-
-
-class Parametro(models.Model):
-    id_parametro = models.AutoField(
-        primary_key=True,
-        verbose_name='Codigo del parámetro'
-    )
-    nombre_parametro = models.CharField(
-        max_length=45,
-        verbose_name='Nombre del parámetro'
-    )
-    id_cultivo = models.ForeignKey(
-        Cultivo,
-        on_delete=models.CASCADE,
-        verbose_name='Cultivo'
-    )
-
-    def __str__(self):
-        return self.nombre_parametro
-
-    class Meta:
-        ordering = ["id_cultivo","nombre_parametro"]
-        verbose_name = "Parámetro"
-        verbose_name_plural = "Parámetros"
 
 
 class Dispositivo(models.Model):
@@ -127,9 +112,8 @@ class Invernadero(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Usuario'
     )
-    id_cultivo = models.ForeignKey(
+    id_cultivo = models.ManyToManyField(
         Cultivo,
-        on_delete=models.CASCADE,
         verbose_name='Cultivo'
     )
     nombre_invernadero = models.CharField(
@@ -145,9 +129,32 @@ class Invernadero(models.Model):
         return self.nombre_invernadero
 
     class Meta:
-        ordering = ["id_cultivo", "nombre_invernadero"]
+        ordering = ["id_invernadero", "nombre_invernadero"]
         verbose_name = "Invernadero"
         verbose_name_plural = "Invernaderos"
+
+class Parametro(models.Model):
+    id_parametro = models.AutoField(
+        primary_key=True,
+        verbose_name='Codigo del parámetro'
+    )
+    nombre_parametro = models.CharField(
+        max_length=45,
+        verbose_name='Nombre del parámetro'
+    )
+    id_invernadero = models.ForeignKey(
+        Invernadero,
+        on_delete=models.CASCADE,
+        verbose_name='Invernadero'
+    )
+
+    def __str__(self):
+        return self.nombre_parametro
+
+    class Meta:
+        ordering = ["id_invernadero","nombre_parametro"]
+        verbose_name = "Parámetro"
+        verbose_name_plural = "Parámetros"
 
 
 class Actuador(models.Model):
@@ -207,10 +214,10 @@ class Medicion(models.Model):
         primary_key=True,
         verbose_name='Codigo de la medición'
     )
-    id_cultivo = models.ForeignKey(
-        Cultivo,
+    id_invernadero = models.ForeignKey(
+        Invernadero,
         on_delete=models.DO_NOTHING,
-        verbose_name='Cultivo'
+        verbose_name='Invernadero'
     )
     id_parametro = models.ForeignKey(
         Parametro,
@@ -242,6 +249,6 @@ class Medicion(models.Model):
         return self.magnitud_medicion
 
     class Meta:
-        ordering = ["fecha_medicion","id_cultivo", "id_sensor", "id_parametro", "id_actuador"]
+        ordering = ["fecha_medicion","id_invernadero", "id_sensor", "id_parametro", "id_actuador"]
         verbose_name = "Medicion"
         verbose_name_plural = "Mediciones"

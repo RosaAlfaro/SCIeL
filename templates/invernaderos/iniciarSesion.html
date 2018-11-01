@@ -9,14 +9,14 @@
               <img class="img-fluid d-block mx-auto mb-4" src="{% static 'media/image/logo.png' %}" alt="" width="250" height="250" style="padding-top: 0.5rem; padding-bottom: 0.3rem;">
               Sistema para el Control de Invernaderos en Línea - SCIeL
           </h3>
-          <div class="alert alert-danger in alert-dismissible">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <strong>
-                {% if form.error_messages %}
-                  <p>{{form.error_messages}}</p>
-                {% endif %}
-            </strong>
-          </div>
+          {% if form.message %}
+            <div class="alert alert-danger in alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <strong>  
+                <p>{{form.message}}</p>
+              </strong>
+            </div>
+          {% endif %}
       </div>
       <div class="card-body form-group form-label-group text-center">
         <strong>

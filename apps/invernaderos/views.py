@@ -12,36 +12,17 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 from django.views.generic import CreateView, TemplateView 
 
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm
 
 class SignUpView(LoginRequiredMixin, CreateView):
     model = User
     form_class = LoginForm
 
-    def form_valid(self, form):
-        form.save()
-        usuario = form.cleaned_data.get('username')
-        password = form.cleaned_date.get('password1')
-        usuario = authenticate(username=usuario, password=password)
-        if(not usuario.is_authenticated):
-            message = "Los datos ingresados son erróneos"
-            return render(
-                form.request,
-                'invernaderos/inciarSesion.html', 
-                context={
-                    'form':form,
-                    'message': message
-                }
-            )
-        else:
-            login(self.request, usuario)
-            return redirect('/')
-
 
 class SignInView(LoginView):
     template_name = 'invernaderos/iniciarSesion.html'
 
-
+    
 """class Login(FormView):
     form_class = AuthenticationForm
     template_name = 'invernaderos/iniciarSesion.html'
