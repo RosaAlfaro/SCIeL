@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.dispatch import receiver
 
 
@@ -8,18 +9,30 @@ class Cultivo(models.Model):
     id_cultivo = models.AutoField(
         primary_key=True,
         verbose_name='Codigo del cultivo',
-        help_text = 'Identificador genérico del cultivo',
-        error_messages = {
+        help_text='Identificador genérico del cultivo',
+        error_messages={
             'exist': 'El indentificador ya existe'
         }
     )
     nombre_cultivo = models.CharField(
         max_length=45,
         null=False,
-        verbose_name='Nombre del cultivo'
+        verbose_name='Nombre del cultivo',
+        help_text='Nombre de la planta a cultivar',
+        error_messages={
+            'empty': 'Este campo no debe quedar vacío'
+        }
     )
     periodo_cosecha = models.IntegerField(
         verbose_name='Periódo de Cosecha',
+        help_text="Debe ingresar el tiempo que tarda el cultivo en dar frutos",
+        error_messages={
+            'value':'Debe ser un dato entero positivo'
+        },
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(1000)
+        ]        
     )
 
     def __str__(self):
@@ -35,8 +48,8 @@ class Etapa(models.Model):
     id_etapa = models.AutoField(
         primary_key=True,
         verbose_name='Codigo de la etapa',
-        help_text = 'Identificador genérico de la Etapa',
-        error_messages = {
+        help_text='Identificador genérico de la Etapa',
+        error_messages={
             'exist': 'El indentificador ya existe',
         }
     )
@@ -44,25 +57,43 @@ class Etapa(models.Model):
         Cultivo,
         on_delete=models.CASCADE,
         verbose_name='Cultivo',
-        help_text = 'Cultivo al que pertenece esta etapa',
+        help_text='Cultivo al que pertenece esta etapa',
+        error_messages={
+            'select': 'Debe seleccionar uno de la lista'
+        }
     )
     numero_etapa = models.IntegerField(
         verbose_name='Número de etapa',
-        blank=False,
-        null=False
+        null=False,
+        help_text="Debe ingresar la cantidad de etapas durante el tiempo de vida del cultivo",
+        error_messages={
+            'value':'Debe ser un dato entero positivo'
+        },
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(10)
+        ]
     )
     nombre_etapa = models.CharField(
         max_length=45,
         verbose_name='Nombre de etapa',
-        blank=False
+        help_text='Ingrese el nombre de la etapa. Ejemplo: Floración'
     )
     duracion = models.IntegerField(
         verbose_name='Duración de la etapa',
-        null=False
+        null=False,
+        help_text="Debe ingresar el tiempo que dura esta etapa",
+        error_messages={
+            'value':'Debe ser un dato entero positivo'
+        },
+        validators=[
+            MinValueValidator(0)
+        ]
     )
     descripcion_etapa = models.CharField(
         max_length=150,
-        verbose_name='Descripcion de la etapa'
+        verbose_name='Descripcion de la etapa',
+        help_text='Ingrese una breve descripción de la etapa'
     )
 
     def __str__(self):
@@ -77,15 +108,15 @@ class Etapa(models.Model):
 class Dispositivo(models.Model):
     id_dispositivo = models.AutoField(
         primary_key=True,
-        verbose_name='Codigo del dispositivo'
+        verbose_name='Codigo del dispositivo',
+        help_text='Identificador genérico del dispositivo',
+        error_messages={
+            'exist': 'El indentificador ya existe'
+        }
     )
     nombre_dispositivo = models.CharField(
         max_length=45,
         verbose_name='Nombre del dispositivo'
-    )
-    estado_dispositivo = models.CharField(
-        max_length=45,
-        verbose_name='Estado del dispositivo'
     )
 
     def __str__(self):
@@ -100,7 +131,11 @@ class Dispositivo(models.Model):
 class Invernadero(models.Model):
     id_invernadero = models.AutoField(
         primary_key=True,
-        verbose_name='Codigo del invernadero'
+        verbose_name='Codigo del invernadero',
+        help_text='Identificador genérico del invernadero',
+        error_messages={
+            'exist': 'El indentificador ya existe'
+        }
     )
     id_dispositivo = models.ForeignKey(
         Dispositivo,
@@ -133,10 +168,15 @@ class Invernadero(models.Model):
         verbose_name = "Invernadero"
         verbose_name_plural = "Invernaderos"
 
+
 class Parametro(models.Model):
     id_parametro = models.AutoField(
         primary_key=True,
-        verbose_name='Codigo del parámetro'
+        verbose_name='Codigo del parámetro',
+        help_text='Identificador genérico del parámetro que servirá de estándar',
+        error_messages={
+            'exist': 'El indentificador ya existe'
+        }
     )
     nombre_parametro = models.CharField(
         max_length=45,
@@ -160,7 +200,11 @@ class Parametro(models.Model):
 class Actuador(models.Model):
     id_actuador = models.AutoField(
         primary_key=True,
-        verbose_name='Codigo del Actuador'
+        verbose_name='Codigo del Actuador',
+        help_text='Identificador genérico del actuador',
+        error_messages={
+            'exist': 'El indentificador ya existe'
+        }
     )
     id_dispositivo = models.ForeignKey(
         Dispositivo,
@@ -188,7 +232,11 @@ class Actuador(models.Model):
 class Sensor(models.Model):
     id_sensor = models.AutoField(
         primary_key=True,
-        verbose_name='Codigo del sensor'
+        verbose_name='Codigo del sensor',
+        help_text='Identificador genérico del sensor',
+        error_messages={
+            'exist': 'El indentificador ya existe'
+        }
     )
     id_dispositivo = models.ForeignKey(
         Dispositivo,
@@ -212,7 +260,11 @@ class Sensor(models.Model):
 class Medicion(models.Model):
     id_medicion = models.AutoField(
         primary_key=True,
-        verbose_name='Codigo de la medición'
+        verbose_name='Codigo de la medición',
+        help_text='Identificador genérico de la medición',
+        error_messages={
+            'exist': 'El indentificador ya existe'
+        }
     )
     id_invernadero = models.ForeignKey(
         Invernadero,
