@@ -125,7 +125,7 @@ USE_TZ = True
 
 LOGIN_URL = '/sign-in/'
 
-LOGIN_REDIRECT_URL = '/invernaderos/'
+LOGIN_REDIRECT_URL = '/'
 
 LOGOUT_REDIRECT_URL = '/sign-in/'
 
