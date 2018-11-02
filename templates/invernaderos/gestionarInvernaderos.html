@@ -67,7 +67,7 @@
                       <th>Operaciones</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="bodyTable">
                     
                     {% for invernadero in invernaderos %}
                     {% csrf_token %}
@@ -78,7 +78,7 @@
                             {% csrf_token %}
                             <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="visualizarInvernadero({{ invernadero.pk }});" style="color:gray !important"></a>
                             <a class="fas fa-w fa-edit" href="editar" href="#" data-toggle="modal" onclick="ditarInvernadero({{invernadero.pk}});" style="color:gray !important"></a>
-                            <a class="fas fa-w fa fa-trash" href="eliminar" href="#" data-toggle="modal" onclick="confirmarBorrado({{ invernadero.pk }}, '{{invernadero.nombre_invernadero}}');" style="color:gray !important"></a>
+                            <a class="fas fa-w fa fa-trash" href="eliminar" href="#" data-toggle="modal" onclick="confirmarBorrado({{ invernadero.pk }}, '{{invernadero.nombre_invernadero}}', {{user.pk}});" style="color:gray !important"></a>
                             <!--<button class="fas fa-w fa-trash" onclick="eliminarFila({{ invernadero.pk }}, {{invernadero.nombre_invernadero}});"></button>
                             {#<a class="fas fa-w fa fa-trash" href="eliminar" data-toggle="modal" data-target="#borrarModal{{invernadero.pk}}" style="color:gray !important"></a>#}
                             <button class="fas fa-w fa-trash" onclick="eliminarFila();"></button>-->

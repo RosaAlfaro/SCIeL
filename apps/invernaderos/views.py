@@ -109,13 +109,13 @@ def index(request):
         })
     return HttpResponse(json.dumps(objetos), content_type='application/json')"""
 
-def borrar_invernadero(request):
-    id_invernadero = request.GET.get('id_invernadero', None)
-    
-    data = {
-     'is_done': model_to_dict(Invernadero.objects.filter(id_invernadero=id_invernadero).delete)
-    }
-    return JsonResponse(dict(data))
+def borrar_invernadero(request, id_invernadero):
+    if request.method == 'POST':
+        print(request)
+        data = {
+        'is_done': Invernadero.objects.filter(id_invernadero=id_invernadero).delete()
+        }
+        return JsonResponse(data)
 
 
 

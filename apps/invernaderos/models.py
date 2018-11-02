@@ -190,8 +190,7 @@ class Invernadero(models.Model):
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
         },
-        null=True, 
-        blank=True
+        null=True
     )
     nombre_invernadero = models.CharField(
         max_length=45,
