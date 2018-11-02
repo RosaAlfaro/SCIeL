@@ -174,7 +174,7 @@ class Invernadero(models.Model):
     )
     id_usuario = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.DO_NOTHING,
         verbose_name='Usuario',
         help_text='Usuario al que pertenece este invernadero',
         error_messages={
@@ -190,7 +190,6 @@ class Invernadero(models.Model):
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
         },
-        null=True
     )
     nombre_invernadero = models.CharField(
         max_length=45,
