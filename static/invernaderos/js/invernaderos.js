@@ -1,5 +1,5 @@
 function ajaxBorrar(id_invernadero, nombre_invernadero){
-  url = "/ajax/borrar/invernadero/"+id_invernadero+"/";
+  url = "/ajax/borrar/invernadero/";
   return $.ajax({
       url: url,
       type: 'POST',
@@ -26,17 +26,6 @@ function borrar(id_invernadero, nombre_invernadero){
   
 }
 
-/*function reloadInvernadero(id_usuario){
-  response = $('#bodyTable').empty();
-  $.ajax({
-    url: 'recargar/invernadero/',
-    type: 'POST',
-    data: {
-      'id_usuario': id_usuario,
-    }
-  });
-  response.s
-}*/
 //  url = "La url como la declara DJANGo";
    // $.ajax({
   //    url: url,
@@ -65,7 +54,7 @@ function confirmarBorrado(id_invernadero, nombre_invernadero){
       "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>"
     )
     $('#borrarModal').modal('show');
-    $('#confirmacion').attr('onclick', 'borrar('+id_invernadero+', \''+nombre_invernadero+')');
+    $('#confirmacion').attr('onclick', 'borrar('+id_invernadero+', \''+nombre_invernadero+'\')');
  }
  $(function () {
   $.ajaxSetup({

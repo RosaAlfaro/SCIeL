@@ -109,11 +109,11 @@ def index(request):
         })
     return HttpResponse(json.dumps(objetos), content_type='application/json')"""
 
-def borrar_invernadero(request, id_invernadero):
+def borrar_invernadero(request):
     if request.method == 'POST':
-        id_invernader = request.POST['id_invernadero']
+        id_invernadero = request.POST['id_invernadero']
         data = {
-        'is_done': Invernadero.objects.filter(id_invernadero=id_invernader).delete()
+        'is_done': Invernadero.objects.filter(id_invernadero=id_invernadero).delete()
         }
         return JsonResponse(data)
 
