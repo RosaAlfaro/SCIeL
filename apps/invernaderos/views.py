@@ -111,9 +111,9 @@ def index(request):
 
 def borrar_invernadero(request, id_invernadero):
     if request.method == 'POST':
-        print(request)
+        id_invernader = request.POST['id_invernadero']
         data = {
-        'is_done': Invernadero.objects.filter(id_invernadero=id_invernadero).delete()
+        'is_done': Invernadero.objects.filter(id_invernadero=id_invernader).delete()
         }
         return JsonResponse(data)
 

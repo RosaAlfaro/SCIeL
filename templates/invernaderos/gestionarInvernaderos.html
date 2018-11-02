@@ -71,14 +71,14 @@
                     
                     {% for invernadero in invernaderos %}
                     {% csrf_token %}
-                      <tr>
+                      <tr id="{{invernadero.id_invernadero}}">
                         <td>{{ invernadero.nombre_invernadero }}</td>
                         <td>{{ invernadero.ubicacion }}</td>
                         <td class="text-center">
                             {% csrf_token %}
-                            <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="visualizarInvernadero({{ invernadero.pk }});" style="color:gray !important"></a>
-                            <a class="fas fa-w fa-edit" href="editar" href="#" data-toggle="modal" onclick="ditarInvernadero({{invernadero.pk}});" style="color:gray !important"></a>
-                            <a class="fas fa-w fa fa-trash" href="eliminar" href="#" data-toggle="modal" onclick="confirmarBorrado({{ invernadero.pk }}, '{{invernadero.nombre_invernadero}}', {{user.pk}});" style="color:gray !important"></a>
+                            <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="visualizarInvernadero({{ invernadero.id_invernadero }});" style="color:gray !important"></a>
+                            <a class="fas fa-w fa-edit" href="editar" href="#" data-toggle="modal" onclick="ditarInvernadero({{ invernadero.id_invernadero }});" style="color:gray !important"></a>
+                            <a class="fas fa-w fa fa-trash" href="eliminar" href="#" data-toggle="modal" onclick="confirmarBorrado({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}');" style="color:gray !important"></a>
                             <!--<button class="fas fa-w fa-trash" onclick="eliminarFila({{ invernadero.pk }}, {{invernadero.nombre_invernadero}});"></button>
                             {#<a class="fas fa-w fa fa-trash" href="eliminar" data-toggle="modal" data-target="#borrarModal{{invernadero.pk}}" style="color:gray !important"></a>#}
                             <button class="fas fa-w fa-trash" onclick="eliminarFila();"></button>-->

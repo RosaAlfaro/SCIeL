@@ -7,13 +7,10 @@ function ajaxBorrar(id_invernadero, nombre_invernadero){
       data: {
         'id_invernadero': id_invernadero,
       },
-      dataType: 'json',
-      succes: function(data){
-        console.log(data)
-      }
+      dataType: 'json'
     }).done(function(respuesta) {
       alert("El invernadero "+nombre_invernadero+ " fue borrado exitosamente");
-      //reloadInvernadero();
+      $('#'+id_invernadero).remove();
     }).fail(function() {
       console.log("error");
       alert("El invernadero "+nombre_invernadero+ " no pudo ser eliminado");
@@ -22,13 +19,11 @@ function ajaxBorrar(id_invernadero, nombre_invernadero){
   });
 }
 
-function borrar(id_invernadero, nombre_invernadero, id_usuario){
+function borrar(id_invernadero, nombre_invernadero){
   $('#borrarModal').modal('hide');
   response = ajaxBorrar(id_invernadero, nombre_invernadero);
-  response.succes(function(data){
-    alert("El invernadero "+nombre_invernadero+ " fue borrado exitosamente");
     //reloadInvernadero(id_usuario)
-  })
+  
 }
 
 /*function reloadInvernadero(id_usuario){
@@ -58,10 +53,10 @@ function borrar(id_invernadero, nombre_invernadero, id_usuario){
  //         console.log("complete");
    //     });
 
-function confirmarBorrado(id_invernadero, nombre_invernadero, id_usuario){
+function confirmarBorrado(id_invernadero, nombre_invernadero){
     $('#modalBodyBorrar').empty();
     $('#modalBodyBorrar').append(
-      "<p>¿Seguro que desea eliminar el invernadero <strong>"+nombre_invernadero+"</strong>?</p>"+
+      "<p>¿Seguro que desea eliminar el invernadero <strong>"+nombre_invernadero+" con id "+id_invernadero+"</strong>?</p>"+
       "<p>Seleccione 'Continuar' para confirmar la acción</p>"
     );
     $('#modalFooterBorrar').empty();
@@ -70,7 +65,7 @@ function confirmarBorrado(id_invernadero, nombre_invernadero, id_usuario){
       "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>"
     )
     $('#borrarModal').modal('show');
-    $('#confirmacion').attr('onclick', 'borrar('+id_invernadero+', \''+nombre_invernadero+'\', '+id_usuario+')');
+    $('#confirmacion').attr('onclick', 'borrar('+id_invernadero+', \''+nombre_invernadero+')');
  }
  $(function () {
   $.ajaxSetup({
