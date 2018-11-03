@@ -62,35 +62,82 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Position</th>
-                      <th>Office</th>
-                      <th>Age</th>
-                      <th>Start date</th>
-                      <th>Salary</th>
+                      <th>Nombre del Invernadero</th>
+                      <th>Ubicacion</th>
+                      <th>Operaciones</th>
                     </tr>
                   </thead>
-                  <tfoot></tfoot>
+                  <tbody id="bodyTable">
+                    
+                    {% for invernadero in invernaderos %}
+                    {% csrf_token %}
+                      <tr id="{{invernadero.id_invernadero}}">
+                        <td>{{ invernadero.nombre_invernadero }}</td>
+                        <td>{{ invernadero.ubicacion }}</td>
+                        <td class="text-center">
+                            {% csrf_token %}
+                            <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="visualizarInvernadero({{ invernadero.id_invernadero }});" style="color:gray !important"></a>
+                            <a class="fas fa-w fa-edit" href="editar" href="#" data-toggle="modal" onclick="ditarInvernadero({{ invernadero.id_invernadero }});" style="color:gray !important"></a>
+                            <a class="fas fa-w fa fa-trash" href="eliminar" href="#" data-toggle="modal" onclick="confirmarBorrado({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}');" style="color:gray !important"></a>
+                            <!--<button class="fas fa-w fa-trash" onclick="eliminarFila({{ invernadero.pk }}, {{invernadero.nombre_invernadero}});"></button>
+                            {#<a class="fas fa-w fa fa-trash" href="eliminar" data-toggle="modal" data-target="#borrarModal{{invernadero.pk}}" style="color:gray !important"></a>#}
+                            <button class="fas fa-w fa-trash" onclick="eliminarFila();"></button>-->
+                        </td>                          
+                      </tr>
+                    {% endfor %}
+                    <script>
+                      function ajaxBorrar(id_invernadero, nombre_invernadero){
+                        url = "/ajax/borrar/invernadero/";
+                        return $.ajax({
+                            url: url,
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: {
+                              'id_invernadero': id_invernadero,
+                            },
+                            dataType: 'json'
+                          }).done(function(respuesta) {
+                            alert(respuesta['message']);
+                            $('#'+id_invernadero).remove();
+                          }).fail(function() {
+                            console.log("error");
+                            alert(respuesta['message']);
+                          }).always(function() {
+                            console.log("complete");
+                        });
+                      };
+                      function borrar(id_invernadero, nombre_invernadero){
+                        $('#borrarModal').modal('hide');
+                        response = ajaxBorrar(id_invernadero, nombre_invernadero);  
+                      };
+                      function confirmarBorrado(id_invernadero, nombre_invernadero){
+                        $('#modalBodyBorrar').empty();
+                        $('#modalBodyBorrar').append(
+                          "<p>¿Seguro que desea eliminar el invernadero <strong>"+nombre_invernadero+" con id "+id_invernadero+"</strong>?</p>"+
+                          "<p>Seleccione 'Continuar' para confirmar la acción</p>"
+                        );
+                        $('#modalFooterBorrar').empty();
+                        $('#modalFooterBorrar').append(
+                          "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
+                          "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>"
+                        )
+                        $('#borrarModal').modal('show');
+                        $('#confirmacion').attr('onclick', 'borrar('+id_invernadero+', \''+nombre_invernadero+'\')');
+                      };
+                      $(function () {
+                        $.ajaxSetup({
+                            headers: { "X-CSRFToken": getCookie("csrftoken") }
+                        });
+                      });
+                    </script>
+                   
+                  </tbody>
               </div>
             </div>
-            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
           </div>
-
-          <p class="small text-center text-muted my-5">
-            <em>More table examples coming soon...</em>
-          </p>
 
         </div>
         <!-- /.container-fluid -->
-
-        <!-- Sticky Footer -->
-        <footer class="sticky-footer">
-          <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-              <span>Copyright © Your Website 2018</span>
-            </div>
-          </div>
-        </footer>
 
       </div>
       <!-- /.content-wrapper -->
@@ -102,23 +149,46 @@
     <a class="scroll-to-top rounded" href="#page-top">
       <i class="fas fa-angle-up"></i>
     </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">¿Seguro que quieres cerrar la sesión?</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual</div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-            <a class="btn btn-primary" href="{% url 'invernaderos:sign-out' %}">Cerrar Sesión</a>
-          </div>
+    {% block modals %}
+        <!-- Logout Modal-->
+        <div class="modal fade" id="borrarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Eliminar Invernadero</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div id="modalBodyBorrar" class="modal-body">
+                    </div>
+                    <div id="modalFooterBorrar" class="modal-footer">
+                    </div>
+                </div> 
+            </div>
         </div>
-      </div>
-    </div>
+        <div class="modal fade" id="visualizarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title bold" id="exampleModalLabel"></h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="" method="POST">
+                        {% csrf_token %}
+                        <label for=""></label>
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button class="btn btn-primary" type="button" data-dismiss="modal">Cancelar</button>
+                     
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock modals %}
 {% endblock content %}
