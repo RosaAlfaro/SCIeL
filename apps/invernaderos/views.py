@@ -56,7 +56,7 @@ class PerfilDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'user'
 
     def get_context_data(self, **kwargs):
-        context = super(PerfilDetailView, self).get_context_data(**kwargs)
+        context = super(PerfilDetailView, self).get_conno rtext_data(**kwargs)
         return context
 
 
@@ -78,14 +78,9 @@ class InicioView(LoginRequiredMixin, TemplateView):
     template_name = 'invernaderos/gestionarInvernaderos.html'
 
 
-def index(request):
-<<<<<<< HEAD
-    redirect('invernaderos/')
-
 class CultivosShow(TemplateView):
     template_name = 'invernaderos/gestionarCultivos.html'
-=======
-    return redirect('/')
+    
 
 """def invernadero_ajax(request):
     id_invernadero = request.POST['id_invernadero']
@@ -128,7 +123,3 @@ def borrar_invernadero(request):
         }
         return JsonResponse(data)
 
-
-
-        
->>>>>>> 255006ad7352e18441501c90026f1e48720009ba
