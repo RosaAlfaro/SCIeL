@@ -1,7 +1,7 @@
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.forms.models import model_to_dict
 from django.urls import reverse_lazy
 from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -16,7 +16,7 @@ from django.utils import timezone
 
 from django.views.generic import CreateView, TemplateView 
 
-from .forms import LoginForm, UserUpdate
+from .forms import LoginForm, UserUpdate, InvernaderoForm
 from .models import *
 
 import json
@@ -67,58 +67,64 @@ class InvernaderosListView(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
+        """id = self.request.POST['user.id']
+        user = User.objects.filter(id=id)
+        context = Invernadero.objects.all().filter(id_usuario=user.id)"""
         context = Invernadero.objects.all()
         return context
     
     def get_context_data(self, **kwargs):
         context = super(InvernaderosListView, self).get_context_data(**kwargs)
         return context
+    
+def editar_invernadero(request):
+    id_invernadero = request.GET['id_invernadero']
+    invernadero = get_object_or_404(Invernadero, id_invernadero=id_invernadero)
+    if request.method == 'POST':
+        form =InvernaderoForm(request.POST, instance=invernadero)
+        if form.is_valid():
+            invernadero = form.save(commit=False)
+            invernadero.id_usuario = request.POST['id_usuario']
+            invernadero.save()
+            message = 'Los cambios fueron guardados exitosamente'
+        else:
+            message = 'Algunos campos son inválidos'
+        data = {
+                'message': message
+            }
+        return JsonResponse(data)
+    else:
+        form = InvernaderoForm(instance=invernadero)
+    data = {
+        'form': form.as_p
+    }
+    return HttpResponse(data)
 
-class InicioView(LoginRequiredMixin, TemplateView):
-    template_name = 'invernaderos/gestionarInvernaderos.html'
-
-
-def index(request):
-    return redirect('/')
-
-"""def invernadero_ajax(request):
+def ver_invernadero(request):
     id_invernadero = request.POST['id_invernadero']
     invernadero = Invernadero.objects.filter(id_invernadero=id_invernadero)
     dispositivo = Dispositivo.objects.filter(id_dispositivo=invernadero.id_dispositivo)
-    sensores = Sensores.objects.filter(id_dispositivo=dispositivo.id_dispositivo).order_by('nombre_dispositivo')
-    objetos = []
-    lista_sensores = []
-    if request.POST['action'] == 'ver' or request.POST['action'] == 'editar':
-        for sensor in sensores:
-            lista_sensores.append({
-                'id_sensor': sensor.id_sensor,
-                'nombre_sensor': sensor.nombre_sensor
-            })
-        objetos.append({
-            'id_invernadero': invernadero.id_invernadero,
-            'nombre_invernadero': invernadero.nombre_invernadero,
-            'ubicacion': invernadero.ubicacion,
-            'id_dispositivo': dispositivo.id_dispositivo,
-            'nombre_dispositivo': dispositivo.nombre_dispositivo,
-            'lista_sensores': lista_sensores
-        })
-    elif request.POST['action'] == 'borrar':
-        objetos.append({
-            'id_invernadero': invernadero.id_invernadero,
-            'nombre_invernadero': invernadero.nombre_invernadero
-        })
-    return HttpResponse(json.dumps(objetos), content_type='application/json')"""
+    sensores = Sensores.objects.filter(id_dispositivo=dispositivo.id_dispositivo).order_by('nombre_sensor')
+    data = {
+        'id_invernadero': invernadero.id_invernadero,
+        'nombre_invernadero': invernadero.nombre_invernadero,
+        'ubicacion': invernadero.ubicacion,
+        'id_dispositivo': dispositivo.id_dispositivo,
+        'nombre_dispositivo': dispositivo.nombre_dispositivo,
+        'sensores': sensores
+    }
+    return JsonResponse(data)
 
 def borrar_invernadero(request):
     if request.method == 'POST':
-        id_invernadero = request.GET.get('id_invernadero')
+        id_invernadero = request.POST['id_invernadero']
         result = Invernadero.objects.filter(id_invernadero=id_invernadero).delete()
-        if result == True:
+        if result:
             message = "El invernadero fue borrado exitosamente"
         else:
             message = "El invernadero no pudo ser borrado"
         data = {
-        'message': message
+            'message': message
         }
         return JsonResponse(data)
 

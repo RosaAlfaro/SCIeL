@@ -46,18 +46,17 @@ class UserUpdate(UpdateView):
             'first_name',
             'last_name',
     )
-    template_name_suffix = '_update_form'
+    template_name = 'invernaderos/editarPerfil.html'
     
 
 class InvernaderoForm(forms.ModelForm):
 
     class Meta:
         model = Invernadero
-        fields = (
+        fields = [
+            'nombre_invernadero',
+            'ubicacion',
             'id_invernadero',
             'id_dispositivo',
-            'id_usuario',
-            'id_cultivo',
-            'nombre_invernadero',
-            'ubicacion'
-            )
+            'id_cultivo'
+        ]
