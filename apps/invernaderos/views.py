@@ -49,3 +49,6 @@ class InicioView(LoginRequiredMixin, TemplateView):
 
 def index(request):
     redirect('invernaderos/')
+
+class CultivosShow(TemplateView):
+    template_name = 'invernaderos/gestionarCultivos.html'
