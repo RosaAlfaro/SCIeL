@@ -18,7 +18,7 @@ class Cultivo(models.Model):
     nombre_cultivo = models.CharField(
         max_length=45,
         null=True, 
-        blank=True,
+        blank=False,
         verbose_name='Nombre del cultivo',
         help_text='Nombre de la planta a cultivar',
         error_messages={
@@ -36,7 +36,7 @@ class Cultivo(models.Model):
             MaxValueValidator(1000)
         ],
         null=True, 
-        blank=True,
+        blank=False,
     )
 
     def __str__(self):
@@ -71,7 +71,7 @@ class Etapa(models.Model):
     numero_etapa = models.IntegerField(
         verbose_name='Número de etapa',
         null=True, 
-        blank=True,
+        blank=False,
         help_text="Debe ingresar la cantidad de etapas durante el tiempo de vida del cultivo",
         error_messages={
             'value':'Debe ser un dato entero positivo'
@@ -89,12 +89,12 @@ class Etapa(models.Model):
             'empty': 'Este campo no debe quedar vacío'
         },
         null=True, 
-        blank=True
+        blank=False
     )
     duracion = models.IntegerField(
         verbose_name='Duración de la etapa',
         null=True, 
-        blank=True,
+        blank=False,
         help_text="Debe ingresar el tiempo que dura esta etapa",
         error_messages={
             'value':'Debe ser un dato entero positivo'
@@ -111,7 +111,7 @@ class Etapa(models.Model):
             'empty': 'Este campo no debe quedar vacío'
         },
         null=True, 
-        blank=True
+        blank=False
     )
 
     def __str__(self):
@@ -140,7 +140,7 @@ class Dispositivo(models.Model):
             'empty': 'Este campo no debe quedar vacío'
         },
         null=True, 
-        blank=True
+        blank=False
     )
 
     def __str__(self):
@@ -189,7 +189,8 @@ class Invernadero(models.Model):
         help_text='Cultivo que se cosechará en este invernadero',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        },
+        }, 
+        blank=True
     )
     nombre_invernadero = models.CharField(
         max_length=45,
@@ -199,7 +200,7 @@ class Invernadero(models.Model):
             'empty': 'Este campo no debe quedar vacío'
         },
         null=True, 
-        blank=True
+        blank=False
     )
     ubicacion = models.CharField(
         max_length=23,
@@ -209,7 +210,7 @@ class Invernadero(models.Model):
             'empty': 'Este campo no debe quedar vacío'
         },
         null=True, 
-        blank=True
+        blank=False
     )
 
     def __str__(self):
@@ -249,7 +250,7 @@ class Parametro(models.Model):
             'empty': 'Este campo no debe quedar vacío'
         },
         null=True, 
-        blank=True
+        blank=False
     )
     magnitud_referencia = models.DecimalField(
         verbose_name='Magnitud del Parámetro Base',
@@ -263,7 +264,7 @@ class Parametro(models.Model):
             MinValueValidator(0)
         ],
         null=True, 
-        blank=True
+        blank=False
     )
 
     def __str__(self):
@@ -314,7 +315,7 @@ class Actuador(models.Model):
             'empty': 'Este campo no debe quedar vacío'
         },
         null=True, 
-        blank=True
+        blank=False
     )
 
     def __str___(self):
@@ -365,7 +366,7 @@ class Sensor(models.Model):
             'empty': 'Este campo no debe quedar vacío'
         },
         null=True, 
-        blank=True
+        blank=False
     )
 
     def __str__(self):
@@ -442,7 +443,7 @@ class Medicion(models.Model):
             MinValueValidator(0)
         ],
         null=True, 
-        blank=True
+        blank=False
     )
     fecha_medicion = models.DateTimeField(
         verbose_name='Fecha de lectura',
@@ -452,7 +453,7 @@ class Medicion(models.Model):
             'value': 'La fecha por defecto es la de hoy'
         },
         null=True, 
-        blank=True
+        blank=False
     )
     is_activo = models.BooleanField(
         default=False,
@@ -462,7 +463,7 @@ class Medicion(models.Model):
             'value': 'Debe ser un atributo boleano'
         },
         null=True, 
-        blank=True
+        blank=False
     )
 
     def take(self):
@@ -470,7 +471,7 @@ class Medicion(models.Model):
         self.save()
 
     def __str__(self):
-        return self.magnitud_medicion
+        return str(self.fecha_medicion)
 
     class Meta:
         ordering = ["fecha_medicion","id_invernadero", "id_sensor", "id_parametro", "id_actuador"]

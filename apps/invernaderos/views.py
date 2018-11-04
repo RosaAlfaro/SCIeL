@@ -1,3 +1,8 @@
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response as RFResponse
+
+from django.views.generic import CreateView, TemplateView 
 from django.views.generic.edit import FormView, UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -5,7 +10,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.forms.models import model_to_dict
 from django.urls import reverse_lazy
 from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,10 +18,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.utils import timezone
 
-from django.views.generic import CreateView, TemplateView 
-
 from .forms import LoginForm, UserUpdate, InvernaderoForm
 from .models import *
+from .serializer import *
 
 import json
 
@@ -67,16 +70,34 @@ class InvernaderosListView(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-        """id = self.request.POST['user.id']
-        user = User.objects.filter(id=id)
-        context = Invernadero.objects.all().filter(id_usuario=user.id)"""
-        context = Invernadero.objects.all()
+        user = self.request.GET['user'].id
+        #user = User.objects.filter(id=id)
+        context = Invernadero.objects.all().filter(id_usuario=user.id)
+        #context = Invernadero.objects.all()
         return context
     
     def get_context_data(self, **kwargs):
         context = super(InvernaderosListView, self).get_context_data(**kwargs)
         return context
+
+
+class CultivosListView(LoginRequiredMixin, ListView):
+    model = Cultivo
+    template_name = 'invernaderos/gestionarCultivos.html'
+    context_object_name = 'cultivos'
+
+
+    def get_queryset(self):
+        """id = self.request.POST['user.id']
+        user = User.objects.filter(id=id)
+        context = Invernadero.objects.all().filter(id_usuario=user.id)"""
+        context = Cultivo.objects.all()
+        return context
     
+    def get_context_data(self, **kwargs):
+        context = super(CultivosListView, self).get_context_data(**kwargs)
+        return context
+
 def editar_invernadero(request):
     id_invernadero = request.GET['id_invernadero']
     invernadero = get_object_or_404(Invernadero, id_invernadero=id_invernadero)
@@ -100,20 +121,91 @@ def editar_invernadero(request):
     }
     return HttpResponse(data)
 
-def ver_invernadero(request):
-    id_invernadero = request.POST['id_invernadero']
-    invernadero = Invernadero.objects.filter(id_invernadero=id_invernadero)
-    dispositivo = Dispositivo.objects.filter(id_dispositivo=invernadero.id_dispositivo)
-    sensores = Sensores.objects.filter(id_dispositivo=dispositivo.id_dispositivo).order_by('nombre_sensor')
-    data = {
-        'id_invernadero': invernadero.id_invernadero,
-        'nombre_invernadero': invernadero.nombre_invernadero,
-        'ubicacion': invernadero.ubicacion,
-        'id_dispositivo': dispositivo.id_dispositivo,
-        'nombre_dispositivo': dispositivo.nombre_dispositivo,
-        'sensores': sensores
-    }
-    return JsonResponse(data)
+@api_view(['GET', 'PUT', 'DELETE'])
+@login_required(login_url='/sign-in/')
+def invernadero(request):
+    
+    if request.method == 'GET':
+
+        id_invernadero = request.GET['id_invernadero']
+
+        invernadero = Invernadero.objects.get(id_invernadero=id_invernadero)
+
+        invernadero_serializer = InvernaderoSerializer(invernadero, many=False)
+        
+        """dispositivo = Dispositivo.objects.filter(id_dispositivo=invernadero.id_dispositivo)
+        dispositivo_serializer = DispositivoSerializer(dispositivo, many=False)
+
+        cultivos = Cultivo.objects.filter(id_invernadero=dispositivo.id_invernadero).order_by('nombre_cultivo')
+        cultivos_serializer = SensorSerializer(cultivos, many=True)
+        
+        data = {
+            'invernadero': invernadero_serializer,
+            'dispositivo': dispositivo_serializer,
+            'cultivos': cultivos_serializer
+        }"""
+        message = 'Los datos han sido desplegados'
+        data = {
+            'invernadero': invernadero_serializer.data,
+            'message': message
+        }
+        return RFResponse(data=data)
+    
+    elif request.method == 'PUT':
+        id_invernadero = request.POST['id_invernadero']
+
+        invernadero = Invernadero.objects.get(id_invernadero=id_invernadero)
+
+        invernadero_serializer = InvernaderoSerializer(invernadero, data=request.data['invernadero'])
+
+        if invernadero_serializer.is_valid():
+            result = invernadero_serializer.save()
+            
+            message = None
+
+            if result:
+                message = "El invernadero fue modificado exitosamente"
+            else:
+                message = "El invernadero no pudo ser modificado"
+            data = {
+                'message': message
+            }
+            return RFResponse(
+                data={
+                    'invernadero': invernadero_serializer.data,
+                    'data':data
+                }
+            )
+        message = "El formulario no es válido"
+        data = {
+            'message': message
+        }
+        return RFResponsedata(
+            data={
+                'errors': invernadero_serializer.errors,
+                'data': data
+            }, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    elif request.method == 'DELETE':
+        id_invernadero = request.POST['id_invernadero']
+
+        invernadero = Invernadero.objects.get(id_invernadero=id_invernadero)
+
+        message = None
+
+        result = invernadero.delete()
+        if result:
+            message = "El invernadero fue borrado exitosamente"
+        else:
+            message = "El invernadero no pudo ser borrado"
+        data = {
+            'message': message,
+        }
+        return RFResponse(data=data, status=status.HTTP_204_NO_CONTENT)
+
+        
 
 def borrar_invernadero(request):
     if request.method == 'POST':

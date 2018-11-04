@@ -6,37 +6,27 @@
       {% block sidebar %}
         <!-- Sidebar -->
         <ul class="sidebar navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'invernaderos:invernaderos' %}">
               <i class="fas fa-fw fa-tachometer-alt"></i>
               <span>Invernaderos</span>
             </a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="fas fa-fw fa-folder"></i>
-              <span>Pages</span>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'invernaderos:cultivos' %}">
+              <i class="fas fa-fw fa-leaf"></i>
+              <span>Cultivos</span>
             </a>
-            <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-              <h6 class="dropdown-header">Login Screens:</h6>
-              <a class="dropdown-item" href="login.html">Login</a>
-              <a class="dropdown-item" href="register.html">Register</a>
-              <a class="dropdown-item" href="forgot-password.html">Forgot Password</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">Other Pages:</h6>
-              <a class="dropdown-item" href="404.html">404 Page</a>
-              <a class="dropdown-item" href="blank.html">Blank Page</a>
-            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="tables.html">
+              <i class="fas fa-fw fa-cogs"></i>
+              <span>Parámetros Estándar</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="charts.html">
               <i class="fas fa-fw fa-chart-area"></i>
               <span>Monitorear</span></a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="tables.html">
-              <i class="fas fa-fw fa-table"></i>
-              <span>Tables</span></a>
           </li>
         </ul>
       {% endblock sidebar %}
@@ -47,16 +37,16 @@
           <!-- Breadcrumbs-->
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
-              <a href="#">Dashboard</a>
+              <a href="#">Invernaderos</a>
             </li>
-            <li class="breadcrumb-item active">Tables</li>
+            <li class="breadcrumb-item active">Datos</li>
           </ol>
 
           <!-- DataTables Example -->
           <div class="card mb-3">
             <div class="card-header">
               <i class="fas fa-table"></i>
-              Data Table Example</div>
+              Invernaderos</div>
             <div class="card-body">
               <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -68,10 +58,10 @@
                     </tr>
                   </thead>
                   <tbody id="bodyTable">
-                    
                     {% for invernadero in invernaderos %}
                     {% csrf_token %}
                       <tr id="{{invernadero.id_invernadero}}">
+                        
                         <td>{{ invernadero.nombre_invernadero }}</td>
                         <td>{{ invernadero.ubicacion }}</td>
                         <td class="text-center">
@@ -84,21 +74,27 @@
                     {% endfor %}
                     <script>
                       function ajaxVer(id_invernadero, id_usuario){
-                        url = "/ajax/ver/invernadero";
+                        url = "/ajax/invernadero/";
                         return $.ajax({
                           url: url,
                           type: 'GET',
                           data: {
                             'id_invernadero': id_invernadero,
-                            'id_usuario': id_usuario,
+                          },
+                          success: function(data){
+                            $('#visualizarModal').modal('show');
+                            $('#detalle').append(
+                              data.invernadero
+                            )
+                            Console.log("SUCCES");
                           },
                           dataType: 'json'
                         }).done(function(respuesta){
-                          alert(respuesta['message']);
+                          /*alert(respuesta['message']);
                           $('#visualizarModal').modal('show');
-                          $('#detalle').append(
-                          respuesta['form']
-                        );
+                          $('#detalle').load(
+                            respuesta
+                          );*/
                         }).fail(function(respuesta){
                           console.log("error");
                         }).always(function(respuesta){
@@ -106,6 +102,7 @@
                         });
                       };
                       function visualizarInvernadero(id_invernadero, id_usuario, nombre_invernadero){
+                        $('#visualizarModalTitulo').empty();
                         $('#visualizarModalTitulo').append("<strong>"+nombre_invernadero+" | "+id_invernadero+"</strong>");
                         $('#modalFooterBorrar').append(
                           "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"
@@ -135,20 +132,20 @@
 
 
                       function ajaxBorrar(id_invernadero, nombre_invernadero){
-                        url = "/ajax/borrar/invernadero/";
+                        url = "/ajax/invernadero/";
                         return $.ajax({
                             url: url,
-                            type: 'POST',
+                            type: 'DELETE',
                             data: {
                               'id_invernadero': id_invernadero,
                             },
                             dataType: 'json'
-                          }).done(function(respuesta) {
-                            alert(respuesta['message']);
+                          }).done(function(data) {
+                            alert(data.message);
                             $('#'+id_invernadero).remove();
-                          }).fail(function() {
+                          }).fail(function(data) {
                             console.log("error");
-                            alert(respuesta['message']);
+                            alert(data.message);
                           }).always(function() {
                             console.log("complete");
                         });
