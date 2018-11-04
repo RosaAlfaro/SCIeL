@@ -8,47 +8,47 @@
       {% if user.is_authenticated %}
               <!-- Sidebar -->
               <ul class="sidebar navbar-nav">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'invernaderos:dispositivos' %}">
-                      <i class="fas fa-fw fa-cubes"></i>
-                      <span>Dispositivos</span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'invernaderos:sensores' %}">
-                      <i class="fas fa-fw fa-thermometer-quarter"></i>
-                      <span>Sensores</span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'invernaderos:actuadores' %}">
-                      <i class="fas fa-fw fa-wrench"></i>
-                      <span>Actuadores</span>
-                    </a>
-                  </li>
-                  <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'invernaderos:invernaderos' %}">
-                      <i class="fas fa-fw fa-tachometer-alt"></i>
-                      <span>Invernaderos</span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'invernaderos:cultivos' %}">
-                      <i class="fas fa-fw fa-leaf"></i>
-                      <span>Cultivos</span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'invernaderos:parametros' %}">
-                      <i class="fas fa-fw fa-cogs"></i>
-                      <span>Parámetros Estándar</span></a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">
-                      <i class="fas fa-fw fa-chart-area"></i>
-                      <span>Monitorear</span></a>
-                  </li>
-                </ul>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'invernaderos:dispositivos' %}">
+                    <i class="fas fa-fw fa-cubes"></i>
+                    <span>Dispositivos</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'invernaderos:sensores' %}">
+                    <i class="fas fa-fw fa-thermometer-quarter"></i>
+                    <span>Sensores</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'invernaderos:actuadores' %}">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Actuadores</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'invernaderos:invernaderos' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Invernaderos</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'invernaderos:cultivos' %}">
+                    <i class="fas fa-fw fa-leaf"></i>
+                    <span>Cultivos</span>
+                  </a>
+                </li>
+                <li class="nav-item active">
+                  <a class="nav-link" href="{% url 'invernaderos:parametros' %}">
+                    <i class="fas fa-fw fa-cogs"></i>
+                    <span>Parámetros Estándar</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Monitorear</span></a>
+                </li>
+              </ul>
               {% endif %}
       {% endblock sidebar %}
       {% block tables %}
@@ -59,7 +59,7 @@
           <!-- Breadcrumbs-->
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
-              <a href="#">Invernaderos</a>
+              <a href="#">Parámetros</a>
             </li>
             <li class="breadcrumb-item active">Datos</li>
           </ol>
@@ -68,31 +68,34 @@
           <div class="card mb-3">
             <div class="card-header">
               <i class="fas fa-table"></i>
-              Invernaderos</div>
+              Parámetros</div>
             <div class="card-body">
               <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                  <thead>
+                  <thead class="text-center">
                     <tr>
-                      <th>Nombre del Invernadero</th>
-                      <th>Ubicacion</th>
+                      <th>Nombre del Parámetro</th>
+                      <th>Invernadero</th>
+                      <th>Magnitud de Referencia</th>
                       <th>Operaciones</th>
                     </tr>
                   </thead>
                   <tbody id="bodyTable">
-                    {% for invernadero in invernaderos %}
-                    {% csrf_token %}
-                      <tr id="{{invernadero.id_invernadero}}">
+                    {% for parametro in parametros %}
+                      
+                        <tr id="{{parametro.id_parametro}}">
+                          <td>{{ parametro.nombre_parametro }}</td>
+                          <td>{{ parametro.id_invernadero }}</td>
+                          <td class="text-center">{{ parametro.magnitud_referencia }}</td>
+                          <td class="text-center">
+                          {% csrf_token %}
+                                  <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="operacion({{ parametro.id_parametro }}, '{{parametro.nombre_parametro}}', '/ajax/parametro/', 'GET', 'PARAMETRO');" style="color:gray !important"></a>
+                                  <a class="fas fa-w fa-edit" name="editar" href="#" data-toggle="modal" onclick="operacion({{ parametro.id_parametro }}, '{{parametro.nombre_parametro}}', '/ajax/parametro/', 'LOAD', 'PARAMETRO');" style="color:gray !important"></a>
+                                  <a class="fas fa-w fa fa-trash" name="eliminar" href="#" data-toggle="modal" onclick="operacion({{ parametro.id_parametro }}, '{{parametro.nombre_parametro}}', '/ajax/parametro/', 'DELETE', 'PARAMETRO');" style="color:gray !important"></a>
+                                </td>                          
+                              </tr>
                         
-                        <td>{{ invernadero.nombre_invernadero }}</td>
-                        <td>{{ invernadero.ubicacion }}</td>
-                        <td class="text-center">
-                            {% csrf_token %}
-                            <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="operacion({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '/ajax/invernadero/', 'GET', 'INVERNADERO');" style="color:gray !important"></a>
-                            <a class="fas fa-w fa-edit" name="editar" href="#" data-toggle="modal" onclick="operacion({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '/ajax/invernadero/', 'LOAD', 'INVERNADERO');" style="color:gray !important"></a>
-                            <a class="fas fa-w fa fa-trash" name="eliminar" href="#" data-toggle="modal" onclick="operacion({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '/ajax/invernadero/', 'DELETE', 'INVERNADERO');" style="color:gray !important"></a>
-                        </td>                          
-                      </tr>
+                      
                     {% endfor %}
                     
                   </tbody>
@@ -190,7 +193,7 @@
                             result.done(function(data){
                               $('#visualizarModal').modal('show');
                               $('#detalle').load(
-                                  data.invernadero
+                                  data.parametro
                               );
                             }).fail(function(data){
                               alert(data.message)
@@ -213,12 +216,12 @@
                             break;
                         case 'DELETE':
                             result.done(function() {
-                              alert("El invernadero fue borrado exitosamente");
+                              alert("El parametro fue borrado exitosamente");
                               $('#detalleModal').modal('hide');
                               $('#'+id).remove();
                             }).fail(function() {
                               console.log("error");
-                              alert("El invernadero no pudo ser borrado");
+                              alert("El parametro no pudo ser borrado");
                               $('#detalleModal').modal('hide');
                             }).always(function() {
                               console.log("complete");

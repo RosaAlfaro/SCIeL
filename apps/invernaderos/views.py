@@ -94,6 +94,98 @@ class CultivosListView(LoginRequiredMixin, ListView):
         context = super(CultivosListView, self).get_context_data(**kwargs)
         return context
 
+
+class ParametrosListView(LoginRequiredMixin, ListView):
+    model = Parametro
+    template_name = 'invernaderos/gestionarParametros.html'
+    context_object_name = 'parametros'
+
+
+    def get_queryset(self):
+        user = self.request.user
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
+        parametros = Parametro.objects.all()
+        datos = []
+        for invernadero in invernaderos:
+            result = parametros.filter(id_invernadero=invernadero.id_invernadero)
+            for parametro in result:
+                datos.append(parametro)
+        context = datos
+        return context
+    
+    def get_context_data(self, **kwargs):
+        context = super(ParametrosListView, self).get_context_data(**kwargs)
+        return context
+
+
+class DispositivosListView(LoginRequiredMixin, ListView):
+    model = Dispositivo
+    template_name = 'invernaderos/gestionarDispositivos.html'
+    context_object_name = 'dispositivos'
+
+
+    def get_queryset(self):
+        user = self.request.user
+        dispositivos = Dispositivo.objects.all()
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
+        datos = []
+        for invernadero in invernaderos:
+            if invernadero.id_dispositivo in dispositivos:
+                if not invernadero.id_dispositivo in datos:
+                    datos.append(invernadero.id_dispositivo)
+        context = datos
+        return context
+    
+    def get_context_data(self, **kwargs):
+        context = super(DispositivosListView, self).get_context_data(**kwargs)
+        return context
+
+
+class SensoresListView(LoginRequiredMixin, ListView):
+    model = Sensor
+    template_name = 'invernaderos/gestionarSensores.html'
+    context_object_name = 'sensores'
+
+
+    def get_queryset(self):
+        user = self.request.user
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
+        sensores = Sensor.objects.all()
+        datos = []
+        for invernadero in invernaderos:
+            result = sensores.filter(id_invernadero=invernadero.id_invernadero)
+            for sensor in result:
+                datos.append(sensor)
+        context = datos
+        return context
+    
+    def get_context_data(self, **kwargs):
+        context = super(SensoresListView, self).get_context_data(**kwargs)
+        return context
+
+
+class ActuadoresListView(LoginRequiredMixin, ListView):
+    model = Actuador
+    template_name = 'invernaderos/gestionarActuadores.html'
+    context_object_name = 'actuadores'
+
+
+    def get_queryset(self):
+        user = self.request.user
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
+        actuadores = Actuador.objects.all()
+        datos = []
+        for invernadero in invernaderos:
+            result = actuadores.filter(id_invernadero=invernadero.id_invernadero)
+            for actuador in result:
+                datos.append(actuador)
+        context = datos
+        return context
+    
+    def get_context_data(self, **kwargs):
+        context = super(ActuadoresListView, self).get_context_data(**kwargs)
+        return context
+
 def editar_invernadero(request):
     id_invernadero = request.GET['id_invernadero']
     invernadero = get_object_or_404(Invernadero, id_invernadero=id_invernadero)

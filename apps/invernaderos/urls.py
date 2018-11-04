@@ -14,6 +14,31 @@ urlpatterns = [
         name='invernaderos'
     ),
     path(
+        'cultivos/',
+        views.CultivosListView.as_view(),
+        name='cultivos'
+    ),
+    path(
+        'dispositivos/',
+        views.DispositivosListView.as_view(),
+        name='dispositivos'
+    ),
+    path(
+        'parametros/',
+        views.ParametrosListView.as_view(),
+        name='parametros'
+    ),
+    path(
+        'sensores/',
+        views.SensoresListView.as_view(),
+        name='sensores'
+    ),
+    path(
+        'actuadores/',
+        views.ActuadoresListView.as_view(),
+        name='actuadores'
+    ),
+    path(
         'ajax/invernadero/',
         views.invernadero,
         name='ajax-invernadero'
@@ -27,11 +52,6 @@ urlpatterns = [
         'sign-out/',
         views.SignOutView.as_view(),
         name='sign-out'
-    ),
-    path(
-        'cultivos/',
-        views.CultivosListView.as_view(),
-        name='cultivos'
     )
 ]
 
