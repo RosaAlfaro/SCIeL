@@ -44,6 +44,11 @@ urlpatterns = [
         name='ajax-invernadero'
     ),
     path(
+        'ajax/dispositivo/',
+        views.dispositivo,
+        name='ajax-dispositivo'
+    ),
+    path(
         'perfil/<slug:pk>/',
         views.PerfilUpdateView.as_view(),
         name='perfil'

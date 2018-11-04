@@ -100,158 +100,158 @@
                     
                   </tbody>
                   {% block script %}
-                <script>
-                    function operacion(id, nombre, url, type, caso){       
-                        console.log("OPERACION: \""+type);
-                        switch(type){
-                        case 'GET':
-                            header = "Visualizar "+caso+": ";
-                            body = null;
-                            footer = "<button class='btn btn-secondary' type='button' data-dismiss='modal'>Cerrar</button>"+
-                            "<button id='confirmacion' class='btn btn-primary' href='#'>Editar</button>";
-                            cargarModal(nombre, header, body, footer);
-                            ejecutarAJAX(id, url, type);
-                            $('#detalleModal').modal('show');
-                            header = "Editar "+caso+": ";
-                            body = $('#detalle').contents();
-                            footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
-                            "<button id='confirmacion' class='btn btn-danger' href='#'>Guardar</button>";
-                            $('#confirmacion').attr('onclick', 'enable()');
-                            $('#detalleModal').modal('hide');
-                            cargarModal(nombre, header, body, footer);
-                            $('#detalleModal').modal('show');
-                            $('#confirmacion').attr('onclick', 'confirmarAccion('+nombre+', '+header+', '+body+', '+footer+')')
-                            $('#detalleModal').modal('hide');
-                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+url+',\'PUT\')');
-                            $('#detalleModal').modal('hide');
-                            break;
-                        case 'LOAD':
-                            header = "Guardar "+caso+": ";
-                            body = null;
-                            footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
-                            "<button id='confirmacion' class='btn btn-danger' href='#'>Guardar</button>";
-                            enable();
-                            cargarModal(nombre, header, body, footer);
-                            ejecutarAJAX(id, nombre, url, 'GET');
-                            $('#detalleModal').modal('show');
-                            $('#confirmacion').attr('onclick', 'confirmarAccion('+nombre+', '+header+', '+body+', '+footer+')')
-                            $('#detalleModal').modal('hide');
-                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+url+',\'PUT\')');
-                            $('#detalleModal').modal('hide');
-                            break;
-                        case 'DELETE':
-                            header = "Eliminar "+caso+": ";
-                            body = "<p>¿Seguro que desea eliminar el "+caso+" <strong>"+nombre+"</strong>?</p>"+
-                            "<p>Seleccione 'Continuar' para confirmar la acción</p>";
-                            footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
-                            "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>";
-                            confirmarAccion(nombre, header, body, footer);
-                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+url+',\''+type+'\')');
-                            break;
-                        };
-                    };
+                  <script>
+                      function operacion(id, nombre, url, type, caso){       
+                          console.log("OPERACION: "+type);
+                          switch(type){
+                          case 'GET':
+                              header = "Visualizar "+caso+": ";
+                              body = null;
+                              footer = "<button class='btn btn-secondary' type='button' data-dismiss='modal'>Cerrar</button>"+
+                              "<button id='confirmacion' class='btn btn-primary' href='#'>Editar</button>";
+                              cargarModal(nombre, header, body, footer);
+                              ejecutarAJAX(id, url, type);
+                              $('#detalleModal').modal('show');
+                              header = "Editar "+caso+": ";
+                              body = $('#detalle').contents();
+                              footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
+                              "<button id='confirmacion' class='btn btn-danger' href='#'>Guardar</button>";
+                              $('#confirmacion').attr('onclick', 'enable()');
+                              $('#detalleModal').modal('hide');
+                              cargarModal(nombre, header, body, footer);
+                              $('#detalleModal').modal('show');
+                              $('#confirmacion').attr('onclick', 'confirmarAccion('+nombre+', '+header+', '+body+', '+footer+')')
+                              $('#detalleModal').modal('hide');
+                              $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+',\''+url+'\',\'PUT\')');
+                              $('#detalleModal').modal('hide');
+                              break;
+                          case 'LOAD':
+                              header = "Guardar "+caso+": ";
+                              body = null;
+                              footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
+                              "<button id='confirmacion' class='btn btn-danger' href='#'>Guardar</button>";
+                              enable();
+                              cargarModal(nombre, header, body, footer);
+                              ejecutarAJAX(id, nombre, url, 'GET');
+                              $('#detalleModal').modal('show');
+                              $('#confirmacion').attr('onclick', 'confirmarAccion('+nombre+', '+header+', '+body+', '+footer+')')
+                              $('#detalleModal').modal('hide');
+                              $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+',\''+url+'\',\'PUT\')');
+                              $('#detalleModal').modal('hide');
+                              break;
+                          case 'DELETE':
+                              header = "Eliminar "+caso+": ";
+                              body = "<p>¿Seguro que desea eliminar el "+caso+" <strong>"+nombre+"</strong>?</p>"+
+                              "<p>Seleccione 'Continuar' para confirmar la acción</p>";
+                              footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
+                              "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>";
+                              confirmarAccion(nombre, header, body, footer);
+                              $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+',\''+url+'\',\''+type+'\')');
+                              break;
+                          };
+                      };
 
-                    function cargarModal(nombre, header, body, footer){
-                      console.log('CARGARMODAL: \''+nombre);
-                        $('#modalHeader').empty();
-                        $('#modalHeader').append(
-                        "<strong>"+header+nombre+"</strong>"
-                        );
-                        $('#modalBody').empty();
-                        $('#modalBody').append(
-                        body
-                        );
-                        $('#modalFooter').empty();
-                        $('#modalFooter').append(
-                        footer
-                        );
-                        $('#detalle').empty();
-                    };
+                      function cargarModal(nombre, header, body, footer){
+                        console.log('CARGARMODAL: '+nombre);
+                          $('#modalHeader').empty();
+                          $('#modalHeader').append(
+                          "<strong>"+header+nombre+"</strong>"
+                          );
+                          $('#modalBody').empty();
+                          $('#modalBody').append(
+                          body
+                          );
+                          $('#modalFooter').empty();
+                          $('#modalFooter').append(
+                          footer
+                          );
+                          $('#detalle').empty();
+                      };
 
-                    function confirmarAccion(nombre, header, body, footer){
-                        console.log("CONFIRMARACCION: \""+nombre);
-                        $('#modalHeader').empty();
-                        $('#modalHeader').append(
-                        "<strong>"+header+nombre+"</strong>"
-                        );
-                        $('#modalBody').empty();
-                        $('#modalBody').append(
-                        body
-                        );
-                        $('#modalFooter').empty();
-                        $('#modalFooter').append(
-                        footer
-                        );
-                        $('#detalleModal').modal('show');
-                    };
+                      function confirmarAccion(nombre, header, body, footer){
+                          console.log("CONFIRMARACCION: "+nombre);
+                          $('#modalHeader').empty();
+                          $('#modalHeader').append(
+                          "<strong>"+header+nombre+"</strong>"
+                          );
+                          $('#modalBody').empty();
+                          $('#modalBody').append(
+                          body
+                          );
+                          $('#modalFooter').empty();
+                          $('#modalFooter').append(
+                          footer
+                          );
+                          $('#detalleModal').modal('show');
+                      };
 
-                    function ejecutarAJAX(id, url, type){
-                        console.log("EJECUTARAJAX: \""+type);
-                        result = ajaxOperacion(id, url, type);
-                        switch(type){
-                        case 'GET':
-                            result.done(function(data){
-                              $('#visualizarModal').modal('show');
-                              $('#detalle').load(
-                                  data.parametro
-                              );
-                            }).fail(function(data){
+                      function ejecutarAJAX(id, url, type){
+                          console.log("EJECUTARAJAX: "+type);
+                          result = ajaxOperacion(id, url, type);
+                          switch(type){
+                          case 'GET':
+                              result.done(function(data){
+                                $('#visualizarModal').modal('show');
+                                $('#detalle').load(
+                                    data.sensor
+                                );
+                              }).fail(function(data){
+                                alert(data.message)
+                                console.log("error");
+                              }).always(function(){
+                                console.log("complete");
+                              });
+                              break;
+                          case 'PUT':
+                              result.done(function(data){
+                                alert(data.message)
+                                $('#detalleModal').modal('hide');
+                              }).fail(function(data){
                               alert(data.message)
-                              console.log("error");
-                            }).always(function(){
-                              console.log("complete");
-                            });
-                            break;
-                        case 'PUT':
-                            result.done(function(data){
-                              alert(data.message)
-                              $('#detalleModal').modal('hide');
-                            }).fail(function(data){
-                            alert(data.message)
-                              console.log("error");
-                              $('#detalleModal').modal('hide')
-                            }).always(function(respuesta){
-                              console.log("complete");
-                            });
-                            break;
-                        case 'DELETE':
-                            result.done(function() {
-                              alert("El parametro fue borrado exitosamente");
-                              $('#detalleModal').modal('hide');
-                              $('#'+id).remove();
-                            }).fail(function() {
-                              console.log("error");
-                              alert("El parametro no pudo ser borrado");
-                              $('#detalleModal').modal('hide');
-                            }).always(function() {
-                              console.log("complete");
-                            });
-                            break;
-                        }
+                                console.log("error");
+                                $('#detalleModal').modal('hide')
+                              }).always(function(respuesta){
+                                console.log("complete");
+                              });
+                              break;
+                          case 'DELETE':
+                              result.done(function() {
+                                alert("El sensor fue borrado exitosamente");
+                                $('#detalleModal').modal('hide');
+                                $('#'+id).remove();
+                              }).fail(function() {
+                                console.log("error");
+                                alert("El sensor no pudo ser borrado");
+                                $('#detalleModal').modal('hide');
+                              }).always(function() {
+                                console.log("complete");
+                              });
+                              break;
+                          }
 
-                    };
+                      };
 
-                    function ajaxOperacion(id, url, type){
-                      console.log("AJAX: \""+type);
-                        return $.ajax({
-                            url: url,
-                            type: type,
-                            data: {
-                            'id': id,
-                            },
-                            success: function(){
-                              console.log("SUCCES");
-                            },
-                            dataType: 'json'
-                        });
-                    };
-                    $(function () {
-                        $.ajaxSetup({
-                            headers: { "X-CSRFToken": getCookie("csrftoken") }
-                        });
-                    });
-                
-                </script>
+                      function ajaxOperacion(id, url, type){
+                        console.log("AJAX: "+type);
+                          return $.ajax({
+                              url: url,
+                              type: type,
+                              data: {
+                              'id': id,
+                              },
+                              success: function(){
+                                console.log("SUCCES");
+                              },
+                              dataType: 'json'
+                          });
+                      };
+                      $(function () {
+                          $.ajaxSetup({
+                              headers: { "X-CSRFToken": getCookie("csrftoken") }
+                          });
+                      });
+                  
+                  </script>
             {% endblock script %}
               </div>
             </div>

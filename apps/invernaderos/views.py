@@ -183,9 +183,63 @@ class ActuadoresListView(LoginRequiredMixin, ListView):
         return context
 
 
-class MonitorearView(LoginRequiredMixin, ListView):
+class MonitorearView(LoginRequiredMixin, TemplateView):
     model = Medicion
     template_name = 'invernaderos/monitorearInvernaderos.html'
+    context_object_name = 'datos'
+
+    def get_queryset(self):
+        user = self.request.user
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
+        cant_invernaderos = invernaderos.count()
+
+        datos = []
+        dispositivos = Dispositivo.objects.all()
+        for invernadero in invernaderos:
+            if invernadero.id_dispositivo in dispositivos:
+                if not invernadero.id_dispositivo in datos:
+                    datos.append(invernadero.id_dispositivo)
+        cant_dispositivos = len(datos)
+        
+        actuadores = Actuador.objects.all()
+        datos = []
+        for invernadero in invernaderos:
+            result = actuadores.filter(id_invernadero=invernadero.id_invernadero)
+            for actuador in result:
+                datos.append(actuador)
+        cant_actuadores = len(datos)
+
+        sensores = Sensor.objects.all()
+        datos = []
+        for invernadero in invernaderos:
+            result = sensores.filter(id_invernadero=invernadero.id_invernadero)
+            for sensor in result:
+                datos.append(sensor)
+        cant_sensores = len(datos)
+
+        parametros = Parametro.objects.all()
+        for invernadero in invernaderos:
+            result = parametros.filter(id_invernadero=invernadero.id_invernadero)
+            for parametro in result:
+                datos.append(parametro)
+        cant_parametros = len(datos)
+        
+        cant_cultivos = Cultivo.objects.all().filter(id_usuario=user.id).count()
+        
+        context = {
+            'cant_cultivos': cant_cultivos,
+            'cant_parametros': cant_parametros,
+            'cant_sensores': cant_sensores,
+            'cant_actuadores': cant_actuadores,
+            'cant_dispositivos': cant_dispositivos,
+            'cant_invernaderos': cant_invernaderos,
+        }
+        return context
+
+    def get_context_data(self, **kwargs):
+        context = super(MonitorearView, self).get_context_data(**kwargs)
+        return context
+    
 
 def editar_invernadero(request):
     id_invernadero = request.GET['id_invernadero']
@@ -291,21 +345,83 @@ def invernadero(request):
             message = "El invernadero no pudo ser borrado"
         return RFResponse(data=message, status=status.HTTP_204_NO_CONTENT)
 
-        
+@api_view(['GET', 'PUT', 'DELETE'])
+@login_required(login_url='/sign-in/')
+def dispositivo(request):
+    
+    if request.method == 'GET':
 
-def borrar_invernadero(request):
-    if request.method == 'POST':
-        id_invernadero = request.POST['id_invernadero']
-        result = Invernadero.objects.filter(id_invernadero=id_invernadero).delete()
-        if result:
-            message = "El invernadero fue borrado exitosamente"
-        else:
-            message = "El invernadero no pudo ser borrado"
+        id_dispositivo = request.GET['id']
+
+        dispositivo = Dispositivo.objects.get(id_dispositivo=id_dispositivo)
+
+        dispositivo_serializer = DispositivoSerializer(dispositivo, many=False)
+        
+        """dispositivo = Dispositivo.objects.filter(id_dispositivo=dispositivo.id_dispositivo)
+        dispositivo_serializer = DispositivoSerializer(dispositivo, many=False)
+
+        cultivos = Cultivo.objects.filter(id_dispositivo=dispositivo.id_dispositivo).order_by('nombre_cultivo')
+        cultivos_serializer = SensorSerializer(cultivos, many=True)
+        
+        data = {
+            'dispositivo': dispositivo_serializer,
+            'dispositivo': dispositivo_serializer,
+            'cultivos': cultivos_serializer
+        }"""
+        message = 'Los datos han sido desplegados'
+        data = {
+            'dispositivo': dispositivo_serializer.data,
+            'message': message
+        }
+        return RFResponse(data=data)
+    
+    elif request.method == 'PUT':
+        id_dispositivo = request.POST['id']
+
+        dispositivo = Dispositivo.objects.get(id_dispositivo=id_dispositivo)
+
+        dispositivo_serializer = DispositivoSerializer(dispositivo, data=request.data['dispositivo'])
+
+        if dispositivo_serializer.is_valid():
+            result = dispositivo_serializer.save()
+            
+            message = None
+
+            if result:
+                message = "El dispositivo fue modificado exitosamente"
+            else:
+                message = "El dispositivo no pudo ser modificado"
+            data = {
+                'message': message
+            }
+            return RFResponse(
+                data={
+                    'dispositivo': dispositivo_serializer.data,
+                    'data':data
+                }
+            )
+        message = "El formulario no es válido"
         data = {
             'message': message
         }
-        return JsonResponse(data)
+        return RFResponsedata(
+            data={
+                'errors': dispositivo_serializer.errors,
+                'data': data
+            }, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
+    elif request.method == 'DELETE':
+        id_dispositivo = request.POST['id']
 
+        dispositivo = Dispositivo.objects.get(id_dispositivo=id_dispositivo)
 
-        
+        message = None
+
+        result = dispositivo.delete()
+        if result:
+            message = "El dispositivo fue borrado exitosamente"
+        else:
+            message = "El dispositivo no pudo ser borrado"
+        return RFResponse(data={'errors': dispositivo_serializer.errors, 'message': message}, status=status.HTTP_204_NO_CONTENT)        
