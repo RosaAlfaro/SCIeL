@@ -1,35 +1,39 @@
 {% extends 'header&footer.html' %}
 {% block title %}SCIeL | Gestión de Invernaderos{% endblock title %}
-  {% block content %}
-    <div id="wrapper">
+
+{% block content %}
+    
 
       {% block sidebar %}
-        <!-- Sidebar -->
-        <ul class="sidebar navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'invernaderos:invernaderos' %}">
-              <i class="fas fa-fw fa-tachometer-alt"></i>
-              <span>Invernaderos</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'invernaderos:cultivos' %}">
-              <i class="fas fa-fw fa-leaf"></i>
-              <span>Cultivos</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="tables.html">
-              <i class="fas fa-fw fa-cogs"></i>
-              <span>Parámetros Estándar</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="charts.html">
-              <i class="fas fa-fw fa-chart-area"></i>
-              <span>Monitorear</span></a>
-          </li>
-        </ul>
+      {% if user.is_authenticated %}
+              <!-- Sidebar -->
+              <ul class="sidebar navbar-nav">
+                <li class="nav-item active">
+                  <a class="nav-link" href="{% url 'invernaderos:invernaderos' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Invernaderos</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'invernaderos:cultivos' %}">
+                    <i class="fas fa-fw fa-leaf"></i>
+                    <span>Cultivos</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="tables.html">
+                    <i class="fas fa-fw fa-cogs"></i>
+                    <span>Parámetros Estándar</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="charts.html">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Monitorear</span></a>
+                </li>
+              </ul>
+              {% endif %}
       {% endblock sidebar %}
+      {% block tables %}
       <div id="content-wrapper">
 
         <div class="container-fluid">
@@ -66,149 +70,168 @@
                         <td>{{ invernadero.ubicacion }}</td>
                         <td class="text-center">
                             {% csrf_token %}
-                            <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="visualizarInvernadero({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '\'/ajax/invernadero/\'', '\'GET\'', '\'INVERNADERO\'');" style="color:gray !important"></a>
-                            <a class="fas fa-w fa-edit" href="editar" href="#" data-toggle="modal" onclick="editarInvernadero({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '\'/ajax/invernadero/\'', '\'PUT\'', '\'INVERNADERO\'');" style="color:gray !important"></a>
-                            <a class="fas fa-w fa fa-trash" href="eliminar" href="#" data-toggle="modal" onclick="confirmarBorrado({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '\'/ajax/invernadero/\'', '\'DELETE\'', '\'INVERNADERO\'');" style="color:gray !important"></a>
+                            <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="operacion({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '/ajax/invernadero/', 'GET', 'INVERNADERO');" style="color:gray !important"></a>
+                            <a class="fas fa-w fa-edit" name="editar" href="#" data-toggle="modal" onclick="operacion({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '/ajax/invernadero/', 'LOAD', 'INVERNADERO');" style="color:gray !important"></a>
+                            <a class="fas fa-w fa fa-trash" name="eliminar" href="#" data-toggle="modal" onclick="operacion({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '/ajax/invernadero/', 'DELETE', 'INVERNADERO');" style="color:gray !important"></a>
                         </td>                          
                       </tr>
                     {% endfor %}
-                    <script>
-                      function operacion(id, nombre, url, type, caso){
-                        
+                    
+                  </tbody>
+                  {% block script %}
+                <script>
+                    function operacion(id, nombre, url, type, caso){       
+                        console.log("OPERACION: "+type);
                         switch(type){
-                          case "GET":
+                        case 'GET':
                             header = "Visualizar "+caso+": ";
                             body = null;
                             footer = "<button class='btn btn-secondary' type='button' data-dismiss='modal'>Cerrar</button>"+
                             "<button id='confirmacion' class='btn btn-primary' href='#'>Editar</button>";
-                            cargarModal(header, body, footer);
-                            ejecutarAJAX(id, nombre, url, type);
+                            cargarModal(nombre, header, body, footer);
+                            ejecutarAJAX(id, url, type);
+                            $('#detalleModal').modal('show');
                             header = "Editar "+caso+": ";
                             body = $('#detalle').contents();
                             footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
                             "<button id='confirmacion' class='btn btn-danger' href='#'>Guardar</button>";
                             $('#confirmacion').attr('onclick', 'enable()');
-                            cargarModal(header, body, footer);
-                            
+                            $('#detalleModal').modal('hide');
+                            cargarModal(nombre, header, body, footer);
+                            $('#detalleModal').modal('show');
+                            $('#confirmacion').attr('onclick', 'confirmarAccion('+nombre+', '+header+', '+body+', '+footer+')')
+                            $('#detalleModal').modal('hide');
+                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+url+',\'PUT\')');
+                            $('#detalleModal').modal('hide');
                             break;
-                          case "PUT":
-                            header = "Editar "+caso+": ";
+                        case 'LOAD':
+                            header = "Guardar "+caso+": ";
                             body = null;
                             footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
                             "<button id='confirmacion' class='btn btn-danger' href='#'>Guardar</button>";
-                            $('#confirmacion').attr('onclick', 'enable()');
-                            cargarModal(header, body, footer);
-                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+nombre+','+url+','+type+')');
+                            enable();
+                            cargarModal(nombre, header, body, footer);
+                            ejecutarAJAX(id, nombre, url, 'GET');
+                            $('#detalleModal').modal('show');
+                            $('#confirmacion').attr('onclick', 'confirmarAccion('+nombre+', '+header+', '+body+', '+footer+')')
+                            $('#detalleModal').modal('hide');
+                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+url+',\'PUT\')');
+                            $('#detalleModal').modal('hide');
                             break;
-                          case "DELETE":
+                        case 'DELETE':
                             header = "Eliminar "+caso+": ";
                             body = "<p>¿Seguro que desea eliminar el "+caso+" <strong>"+nombre+"</strong>?</p>"+
                             "<p>Seleccione 'Continuar' para confirmar la acción</p>";
                             footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
                             "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>";
-                            cargarModal(header, body, footer);
-                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+nombre+','+url+','+type+')');
+                            confirmarAccion(nombre, header, body, footer);
+                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+url+',\''+type+'\')');
                             break;
                         };
-                      };
-                      function cargarModal(header, body, footer){
+                    };
+
+                    function cargarModal(nombre, header, body, footer){
+                      console.log('CARGARMODAL: \''+nombre);
                         $('#modalHeader').empty();
                         $('#modalHeader').append(
-                          "<strong>"+header+nombre+" - "+id+"</strong>"
+                        "<strong>"+header+nombre+"</strong>"
                         );
                         $('#modalBody').empty();
                         $('#modalBody').append(
-                          body
+                        body
                         );
                         $('#modalFooter').empty();
                         $('#modalFooter').append(
-                          footer
+                        footer
                         );
                         $('#detalle').empty();
-                      };
-                      $(function () {
-                        $.ajaxSetup({
-                            headers: { "X-CSRFToken": getCookie("csrftoken") }
-                        });
-                      });
+                    };
 
-                      function ejecutarAJAX(){
-                        ajaxOperacion(
-                          id,
-                          nombre,
-                          url,
-                          type
-                        ).done(function(respuesta){
-                          /*alert(respuesta['message']);
-                          $('#visualizarModal').modal('show');
-                          $('#detalle').load(
-                            respuesta
-                          );*/
-                        }).fail(function(respuesta){
-                          console.log("error");
-                        }).always(function(respuesta){
-                          console.log("complete");
-                        }).success(function(data){
-                            $('#visualizarModal').modal('show');
-                            $('#detalle').append(
-                              data.invernadero
-                            )
-                            Console.log("SUCCES");
-                        });
-                      };
+                    function confirmarAccion(nombre, header, body, footer){
+                        console.log("CONFIRMARACCION: "+nombre);
+                        $('#modalHeader').empty();
+                        $('#modalHeader').append(
+                        "<strong>"+header+nombre+"</strong>"
+                        );
+                        $('#modalBody').empty();
+                        $('#modalBody').append(
+                        body
+                        );
+                        $('#modalFooter').empty();
+                        $('#modalFooter').append(
+                        footer
+                        );
+                        $('#detalleModal').modal('show');
+                    };
 
-                      function ajaxOperacion(id, nombre, url, type){
+                    function ejecutarAJAX(id, url, type){
+                        console.log("EJECUTARAJAX: \""+type);
+                        result = ajaxOperacion(id, url, type);
+                        switch(type){
+                        case 'GET':
+                            result.done(function(data){
+                              $('#visualizarModal').modal('show');
+                              $('#detalle').load(
+                                  data.invernadero
+                              );
+                            }).fail(function(data){
+                              alert(data.message)
+                              console.log("error");
+                            }).always(function(){
+                              console.log("complete");
+                            });
+                            break;
+                        case 'PUT':
+                            result.done(function(data){
+                              alert(data.message)
+                              $('#detalleModal').modal('hide');
+                            }).fail(function(data){
+                            alert(data.message)
+                              console.log("error");
+                              $('#detalleModal').modal('hide')
+                            }).always(function(respuesta){
+                              console.log("complete");
+                            });
+                            break;
+                        case 'DELETE':
+                            result.done(function() {
+                              alert("El invernadero fue borrado exitosamente");
+                              $('#detalleModal').modal('hide');
+                              $('#'+id).remove();
+                            }).fail(function() {
+                              console.log("error");
+                              alert("El invernadero no pudo ser borrado");
+                              $('#detalleModal').modal('hide');
+                            }).always(function() {
+                              console.log("complete");
+                            });
+                            break;
+                        }
+
+                    };
+
+                    function ajaxOperacion(id, url, type){
+                      console.log("AJAX: "+type);
                         return $.ajax({
                             url: url,
                             type: type,
                             data: {
-                              'id': id,
+                            'id': id,
+                            },
+                            success: function(){
+                              console.log("SUCCES");
                             },
                             dataType: 'json'
-                          });
-                      };
-
-                      function borrar(id, nombre, url, type){
-                        $('#borrarModalTitulo').empty();
-                        $('#borrarModalTitulo').append("Eliminar Invernadero");
-                        $('#borrarModal').modal('hide');
-                        response = ajaxOperacion(
-                          id,
-                          nombre,
-                          url,
-                          type
-                          ).done(function() {
-                            alert("El invernadero fue borrado exitosamente");
-                            $('#'+id).remove();
-                          }).fail(function() {
-                            console.log("error");
-                            alert("El invernadero no pudo ser borrado");
-                          }).always(function() {
-                            console.log("complete");
-                        });  
-                      };
-
-                      function confirmarBorrado(id, nombre, url, type){
-                        $('#modalBodyBorrar').empty();
-                        $('#modalBodyBorrar').append(
-                          "<p>¿Seguro que desea eliminar el invernadero <strong>"+nombre+"</strong>?</p>"+
-                          "<p>Seleccione 'Continuar' para confirmar la acción</p>"
-                        );
-                        $('#modalFooterBorrar').empty();
-                        $('#modalFooterBorrar').append(
-                          "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
-                          "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>"
-                        );
-                        $('#borrarModal').modal('show');
-                        $('#confirmacion').attr('onclick', 'borrar('+id+', \''+nombre+'\', '+url+','+type+')');
-                      };
-                      $(function () {
+                        });
+                    };
+                    $(function () {
                         $.ajaxSetup({
                             headers: { "X-CSRFToken": getCookie("csrftoken") }
                         });
-                      });
-                    </script>
-                  </tbody>
+                    });
+                
+                </script>
+            {% endblock script %}
               </div>
             </div>
           </div>
@@ -219,52 +242,54 @@
       </div>
       <!-- /.content-wrapper -->
 
-    </div>
     <!-- /#wrapper -->
 
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
       <i class="fas fa-angle-up"></i>
     </a>
+    {% endblock tables %}
     {% block modals %}
-        <!-- Logout Modal-->
-        <div class="modal fade" id="borrarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    {% csrf_token %}
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="borrarModalTitulo"></h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div id="modalBodyBorrar" class="modal-body">
-                    </div>
-                    <div id="modalFooterBorrar" class="modal-footer">
-                    </div>
-                </div> 
-            </div>
-        </div>
-        <div class="modal fade" id="visualizarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title bold" id="visualizarModalTitulo"></h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                      <form action="" method="POST" id="detalle">
+            <!--VIEW, EDIT & DELETE MODAL-->
+            <div class="modal fade" id="detalleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
                         {% csrf_token %}
-                      </form>
-                    </div>
-                    <div class="modal-footer">
-                      <button class="btn btn-primary" type="button" data-dismiss="modal">Cancelar</button>
-                     
+                        <div class="modal-header">
+                            <h5 class="modal-title bold" id="modalHeader"></h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div id="modalBody" class="modal-body">
+                          <form action="" method="POST" id="detalle">
+                            {% csrf_token %}
+                          </form>
+                        </div>
+                        <div id="modalFooter" class="modal-footer">
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <!--LOGOUT MODAL-->
+            <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">¿Seguro que quieres cerrar la sesión?</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual</div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                                <a class="btn btn-primary" href="{% url 'invernaderos:sign-out' %}">Cerrar Sesión</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% endblock modals %}
+            {% endblock modals %}
+    
 {% endblock content %}

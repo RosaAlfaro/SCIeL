@@ -28,35 +28,21 @@
     <div id="page-top">
         {% block header %}
         {% endblock header %}
+        <div id="wrapper">
         {% block content %}
             {% block sidebar %}
             {% endblock sidebar %}
             {% block tables %}
             {% endblock tables %}
+            {% block script %}
+                
+            {% endblock script %}
             {% block modals %}
             {% endblock modals %}
         {% endblock content %}
+        </div>
         {% block footer %}
         {% endblock footer %}
-        <!-- Logout Modal-->
-        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">¿Seguro que quieres cerrar la sesión?</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual</div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                            <a class="btn btn-primary" href="{% url 'invernaderos:sign-out' %}">Cerrar Sesión</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <!-- Bootstrap core JavaScript-->
         <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
         <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>

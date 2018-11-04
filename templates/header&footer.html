@@ -2,7 +2,7 @@
 {% block title %}
 {% endblock %}
 {% block header %}
-<nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+<nav class="navbar navbar-expand static-top" style="background-color: #212529 !important">
 
         <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
           <i>
@@ -13,9 +13,9 @@
 
         {% if user.is_authenticated %}
           <!-- Navbar -->
-          <ul class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0 navbar-nav">
+          <ul class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0 navbar-nav text-white">
             <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="bold nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #f8f9fa !important">
                 {% if user.first_name %}
                   <i>{{ user.first_name }} {{ user.last_name }} <span class="fas fa-user-circle fa-fw"></span></i>
                 {% else %}
@@ -31,6 +31,9 @@
         </ul>
         {% endif %}
       </nav>
-{% endblock header%}
-{% block content %}
-{% endblock content %}
+  {% endblock header%}
+  {% block content %}
+    {% block tables %}
+    {% endblock tables %}
+
+  {% endblock content %}

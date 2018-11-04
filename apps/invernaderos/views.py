@@ -87,7 +87,7 @@ class CultivosListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        context = Cultivos.objects.all().filter(id_usuario=user.id)
+        context = Cultivo.objects.all().filter(id_usuario=user.id)
         return context
     
     def get_context_data(self, **kwargs):
