@@ -45,7 +45,7 @@ urlpatterns = [
     ),
     path(
         'perfil/<slug:pk>/',
-        views.PerfilDetailView.as_view(),
+        views.PerfilUpdateView.as_view(),
         name='perfil'
     ),
     path(

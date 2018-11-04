@@ -18,7 +18,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.utils import timezone
 
-from .forms import LoginForm, UserUpdate, InvernaderoForm
+from .forms import LoginForm, UserUpdateForm, InvernaderoForm
 from .models import *
 from .serializer import *
 
@@ -53,14 +53,10 @@ class SignOutView(LoginRequiredMixin, LogoutView):
     template_name = 'invernaderos/iniciarSesion.html'
 
 
-class PerfilDetailView(LoginRequiredMixin, DetailView):
+class PerfilUpdateView(LoginRequiredMixin, FormView):
+    form_class = UserUpdateForm
     template_name = 'invernaderos/editarPerfil.html'
-    model = User
     context_object_name = 'user'
-
-    def get_context_data(self, **kwargs):
-        context = super(PerfilDetailView, self).get_context_data(**kwargs)
-        return context
 
 
 class InvernaderosListView(LoginRequiredMixin, ListView):
@@ -149,13 +145,13 @@ class SensoresListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
         sensores = Sensor.objects.all()
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
         datos = []
-        for invernadero in invernaderos:
-            result = sensores.filter(id_invernadero=invernadero.id_invernadero)
-            for sensor in result:
-                datos.append(sensor)
+        for sensor in sensores:
+            if sensor.id_dispositivo in invernaderos:
+                if not sensor in datos:
+                    datos.append(sensor)
         context = datos
         return context
     

@@ -1,7 +1,7 @@
 from .models import * 
 
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django.views.generic.edit import UpdateView
 
@@ -38,15 +38,16 @@ class LoginForm(AuthenticationForm):
         )
 
 
-class UserUpdate(UpdateView):
-    model = User
-    fields = (
-            'username',
-            'email',
-            'first_name',
-            'last_name',
-    )
-    template_name = 'invernaderos/editarPerfil.html'
+class UserUpdateForm(forms.ModelForm):
+    
+    class Meta:
+        model = User
+        fields = (
+                'username',
+                'email',
+                'first_name',
+                'last_name',
+        )
     
 
 class InvernaderoForm(forms.ModelForm):
