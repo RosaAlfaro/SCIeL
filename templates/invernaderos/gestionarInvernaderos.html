@@ -66,30 +66,79 @@
                         <td>{{ invernadero.ubicacion }}</td>
                         <td class="text-center">
                             {% csrf_token %}
-                            <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="visualizarInvernadero({{ invernadero.id_invernadero }}, '{{ invernadero.id_usuario }}', '{{invernadero.nombre_invernadero}}');" style="color:gray !important"></a>
-                            <a class="fas fa-w fa-edit" href="editar" href="#" data-toggle="modal" onclick="editarInvernadero({{ invernadero.id_invernadero }}, '{{ invernadero.id_usuario }}', '{{invernadero.nombre_invernadero}}');" style="color:gray !important"></a>
-                            <a class="fas fa-w fa fa-trash" href="eliminar" href="#" data-toggle="modal" onclick="confirmarBorrado({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}');" style="color:gray !important"></a>
+                            <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="visualizarInvernadero({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '\'/ajax/invernadero/\'', '\'GET\'', '\'INVERNADERO\'');" style="color:gray !important"></a>
+                            <a class="fas fa-w fa-edit" href="editar" href="#" data-toggle="modal" onclick="editarInvernadero({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '\'/ajax/invernadero/\'', '\'PUT\'', '\'INVERNADERO\'');" style="color:gray !important"></a>
+                            <a class="fas fa-w fa fa-trash" href="eliminar" href="#" data-toggle="modal" onclick="confirmarBorrado({{ invernadero.id_invernadero }}, '{{invernadero.nombre_invernadero}}', '\'/ajax/invernadero/\'', '\'DELETE\'', '\'INVERNADERO\'');" style="color:gray !important"></a>
                         </td>                          
                       </tr>
                     {% endfor %}
                     <script>
-                      function ajaxVer(id_invernadero, id_usuario){
-                        url = "/ajax/invernadero/";
-                        return $.ajax({
-                          url: url,
-                          type: 'GET',
-                          data: {
-                            'id_invernadero': id_invernadero,
-                          },
-                          success: function(data){
-                            $('#visualizarModal').modal('show');
-                            $('#detalle').append(
-                              data.invernadero
-                            )
-                            Console.log("SUCCES");
-                          },
-                          dataType: 'json'
-                        }).done(function(respuesta){
+                      function operacion(id, nombre, url, type, caso){
+                        
+                        switch(type){
+                          case "GET":
+                            header = "Visualizar "+caso+": ";
+                            body = null;
+                            footer = "<button class='btn btn-secondary' type='button' data-dismiss='modal'>Cerrar</button>"+
+                            "<button id='confirmacion' class='btn btn-primary' href='#'>Editar</button>";
+                            cargarModal(header, body, footer);
+                            ejecutarAJAX(id, nombre, url, type);
+                            header = "Editar "+caso+": ";
+                            body = $('#detalle').contents();
+                            footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
+                            "<button id='confirmacion' class='btn btn-danger' href='#'>Guardar</button>";
+                            $('#confirmacion').attr('onclick', 'enable()');
+                            cargarModal(header, body, footer);
+                            
+                            break;
+                          case "PUT":
+                            header = "Editar "+caso+": ";
+                            body = null;
+                            footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
+                            "<button id='confirmacion' class='btn btn-danger' href='#'>Guardar</button>";
+                            $('#confirmacion').attr('onclick', 'enable()');
+                            cargarModal(header, body, footer);
+                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+nombre+','+url+','+type+')');
+                            break;
+                          case "DELETE":
+                            header = "Eliminar "+caso+": ";
+                            body = "<p>¿Seguro que desea eliminar el "+caso+" <strong>"+nombre+"</strong>?</p>"+
+                            "<p>Seleccione 'Continuar' para confirmar la acción</p>";
+                            footer = "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
+                            "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>";
+                            cargarModal(header, body, footer);
+                            $('#confirmacion').attr('onclick', 'ejecutarAJAX('+id+','+nombre+','+url+','+type+')');
+                            break;
+                        };
+                      };
+                      function cargarModal(header, body, footer){
+                        $('#modalHeader').empty();
+                        $('#modalHeader').append(
+                          "<strong>"+header+nombre+" - "+id+"</strong>"
+                        );
+                        $('#modalBody').empty();
+                        $('#modalBody').append(
+                          body
+                        );
+                        $('#modalFooter').empty();
+                        $('#modalFooter').append(
+                          footer
+                        );
+                        $('#detalle').empty();
+                      };
+                      $(function () {
+                        $.ajaxSetup({
+                            headers: { "X-CSRFToken": getCookie("csrftoken") }
+                        });
+                      });
+
+                      function ejecutarAJAX(){
+                        ajaxOperacion(
+                          id,
+                          nombre,
+                          url,
+                          type
+                        ).done(function(respuesta){
                           /*alert(respuesta['message']);
                           $('#visualizarModal').modal('show');
                           $('#detalle').load(
@@ -99,67 +148,50 @@
                           console.log("error");
                         }).always(function(respuesta){
                           console.log("complete");
+                        }).success(function(data){
+                            $('#visualizarModal').modal('show');
+                            $('#detalle').append(
+                              data.invernadero
+                            )
+                            Console.log("SUCCES");
                         });
                       };
-                      function visualizarInvernadero(id_invernadero, id_usuario, nombre_invernadero){
-                        $('#visualizarModalTitulo').empty();
-                        $('#visualizarModalTitulo').append("<strong>"+nombre_invernadero+" | "+id_invernadero+"</strong>");
-                        $('#modalFooterBorrar').append(
-                          "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"
-                        );
-                        $('#detalle').empty();
-                        respuesta = ajaxVer(id_invernadero, id_usuario);
-                      };
-                      function confirmarEdicion(id_invernadero, nombre_invernadero){
-                        $('#modalBodyBorrar').empty();
-                        $('#modalBodyBorrar').append(
-                          "<p>¿Seguro que desea eliminar el invernadero <strong>"+nombre_invernadero+"</strong>?</p>"+
-                          "<p>Seleccione 'Continuar' para confirmar la acción</p>"
-                        );
-                        $('#modalFooterBorrar').empty();
-                        $('#modalFooterBorrar').append(
-                          "<button class='btn btn-primary' type='button' data-dismiss='modal'>Cancelar</button>"+
-                          "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>"
-                        );
-                        $('#borrarModal').modal('show');
-                        $('#confirmacion').attr('onclick', 'borrar('+id_invernadero+', \''+nombre_invernadero+'\')');
-                      };
-                      $(function () {
-                        $.ajaxSetup({
-                            headers: { "X-CSRFToken": getCookie("csrftoken") }
-                        });
-                      });
 
-
-                      function ajaxBorrar(id_invernadero, nombre_invernadero){
-                        url = "/ajax/invernadero/";
+                      function ajaxOperacion(id, nombre, url, type){
                         return $.ajax({
                             url: url,
-                            type: 'DELETE',
+                            type: type,
                             data: {
-                              'id_invernadero': id_invernadero,
+                              'id': id,
                             },
                             dataType: 'json'
-                          }).done(function(data) {
-                            alert(data.message);
-                            $('#'+id_invernadero).remove();
-                          }).fail(function(data) {
+                          });
+                      };
+
+                      function borrar(id, nombre, url, type){
+                        $('#borrarModalTitulo').empty();
+                        $('#borrarModalTitulo').append("Eliminar Invernadero");
+                        $('#borrarModal').modal('hide');
+                        response = ajaxOperacion(
+                          id,
+                          nombre,
+                          url,
+                          type
+                          ).done(function() {
+                            alert("El invernadero fue borrado exitosamente");
+                            $('#'+id).remove();
+                          }).fail(function() {
                             console.log("error");
-                            alert(data.message);
+                            alert("El invernadero no pudo ser borrado");
                           }).always(function() {
                             console.log("complete");
-                        });
+                        });  
                       };
 
-                      function borrar(id_invernadero, nombre_invernadero){
-                        $('#borrarModal').modal('hide');
-                        response = ajaxBorrar(id_invernadero, nombre_invernadero);  
-                      };
-
-                      function confirmarBorrado(id_invernadero, nombre_invernadero){
+                      function confirmarBorrado(id, nombre, url, type){
                         $('#modalBodyBorrar').empty();
                         $('#modalBodyBorrar').append(
-                          "<p>¿Seguro que desea eliminar el invernadero <strong>"+nombre_invernadero+"</strong>?</p>"+
+                          "<p>¿Seguro que desea eliminar el invernadero <strong>"+nombre+"</strong>?</p>"+
                           "<p>Seleccione 'Continuar' para confirmar la acción</p>"
                         );
                         $('#modalFooterBorrar').empty();
@@ -168,7 +200,7 @@
                           "<button id='confirmacion' class='btn btn-danger' href='#'>Continuar</button>"
                         );
                         $('#borrarModal').modal('show');
-                        $('#confirmacion').attr('onclick', 'borrar('+id_invernadero+', \''+nombre_invernadero+'\')');
+                        $('#confirmacion').attr('onclick', 'borrar('+id+', \''+nombre+'\', '+url+','+type+')');
                       };
                       $(function () {
                         $.ajaxSetup({
@@ -201,7 +233,7 @@
                 <div class="modal-content">
                     {% csrf_token %}
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Eliminar Invernadero</h5>
+                        <h5 class="modal-title" id="borrarModalTitulo"></h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>

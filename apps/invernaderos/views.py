@@ -70,10 +70,8 @@ class InvernaderosListView(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-        user = self.request.GET['user'].id
-        #user = User.objects.filter(id=id)
+        user = self.request.user
         context = Invernadero.objects.all().filter(id_usuario=user.id)
-        #context = Invernadero.objects.all()
         return context
     
     def get_context_data(self, **kwargs):
@@ -88,10 +86,8 @@ class CultivosListView(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-        """id = self.request.POST['user.id']
-        user = User.objects.filter(id=id)
-        context = Invernadero.objects.all().filter(id_usuario=user.id)"""
-        context = Cultivo.objects.all()
+        user = self.request.user
+        context = Cultivos.objects.all().filter(id_usuario=user.id)
         return context
     
     def get_context_data(self, **kwargs):
@@ -127,7 +123,7 @@ def invernadero(request):
     
     if request.method == 'GET':
 
-        id_invernadero = request.GET['id_invernadero']
+        id_invernadero = request.GET['id']
 
         invernadero = Invernadero.objects.get(id_invernadero=id_invernadero)
 
@@ -152,7 +148,7 @@ def invernadero(request):
         return RFResponse(data=data)
     
     elif request.method == 'PUT':
-        id_invernadero = request.POST['id_invernadero']
+        id_invernadero = request.POST['id']
 
         invernadero = Invernadero.objects.get(id_invernadero=id_invernadero)
 
@@ -189,7 +185,7 @@ def invernadero(request):
         )
 
     elif request.method == 'DELETE':
-        id_invernadero = request.POST['id_invernadero']
+        id_invernadero = request.POST['id']
 
         invernadero = Invernadero.objects.get(id_invernadero=id_invernadero)
 
@@ -200,10 +196,7 @@ def invernadero(request):
             message = "El invernadero fue borrado exitosamente"
         else:
             message = "El invernadero no pudo ser borrado"
-        data = {
-            'message': message,
-        }
-        return RFResponse(data=data, status=status.HTTP_204_NO_CONTENT)
+        return RFResponse(data=message, status=status.HTTP_204_NO_CONTENT)
 
         
 

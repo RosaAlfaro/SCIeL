@@ -15,6 +15,15 @@ class Cultivo(models.Model):
             'exist': 'El indentificador ya existe'
         }
     )
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.DO_NOTHING,
+        verbose_name='Usuario',
+        help_text='Usuario al que pertenece este cultivo',
+        error_messages={
+            'select': 'Debe seleccionar uno de la lista'
+        },
+    )
     nombre_cultivo = models.CharField(
         max_length=45,
         null=True, 
@@ -318,7 +327,7 @@ class Actuador(models.Model):
         blank=False
     )
 
-    def __str___(self):
+    def __str__(self):
         return self.nombre_actuador
 
     class Meta:
