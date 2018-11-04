@@ -1,5 +1,5 @@
 {% extends 'header&footer.html' %}
-{% block title %}SCIeL | Gestión de Invernaderos{% endblock title %}
+{% block title %}SCIeL - Gestión de Parámetros Estándar{% endblock title %}
 
 {% block content %}
     
@@ -44,7 +44,7 @@
                     <span>Parámetros Estándar</span></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">
+                  <a class="nav-link" href="{% url 'invernaderos:monitorear' %}">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Monitorear</span></a>
                 </li>
@@ -102,7 +102,7 @@
                   {% block script %}
                 <script>
                     function operacion(id, nombre, url, type, caso){       
-                        console.log("OPERACION: "+type);
+                        console.log("OPERACION: \""+type);
                         switch(type){
                         case 'GET':
                             header = "Visualizar "+caso+": ";
@@ -169,7 +169,7 @@
                     };
 
                     function confirmarAccion(nombre, header, body, footer){
-                        console.log("CONFIRMARACCION: "+nombre);
+                        console.log("CONFIRMARACCION: \""+nombre);
                         $('#modalHeader').empty();
                         $('#modalHeader').append(
                         "<strong>"+header+nombre+"</strong>"
@@ -232,7 +232,7 @@
                     };
 
                     function ajaxOperacion(id, url, type){
-                      console.log("AJAX: "+type);
+                      console.log("AJAX: \""+type);
                         return $.ajax({
                             url: url,
                             type: type,

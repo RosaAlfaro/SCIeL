@@ -44,7 +44,7 @@
                     <span>Parámetros Estándar</span></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">
+                  <a class="nav-link" href="{% url 'invernaderos:monitorear' %}">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Monitorear</span></a>
                 </li>
@@ -88,7 +88,6 @@
                           <td>{{ sensor.nombre_sensor }}</td>
                           <td>{{ sensor.id_dispositivo }}</td>
                           <td>{{ sensor.id_invernadero }}</td>
-                          <td class="text-center">{{ sensor.magnitud_referencia }}</td>
                           <td class="text-center">
                           {% csrf_token %}
                                   <a class="fas fa-w fa-eye" name="ver" href="#"  data-toggle="modal" onclick="operacion({{ sensor.id_sensor }}, '{{sensor.nombre_sensor}}', '/ajax/sensor/', 'GET', 'SENSOR');" style="color:gray !important"></a>
@@ -104,7 +103,7 @@
                   {% block script %}
                 <script>
                     function operacion(id, nombre, url, type, caso){       
-                        console.log("OPERACION: "+type);
+                        console.log("OPERACION: \""+type);
                         switch(type){
                         case 'GET':
                             header = "Visualizar "+caso+": ";
@@ -171,7 +170,7 @@
                     };
 
                     function confirmarAccion(nombre, header, body, footer){
-                        console.log("CONFIRMARACCION: "+nombre);
+                        console.log("CONFIRMARACCION: \""+nombre);
                         $('#modalHeader').empty();
                         $('#modalHeader').append(
                         "<strong>"+header+nombre+"</strong>"
@@ -234,7 +233,7 @@
                     };
 
                     function ajaxOperacion(id, url, type){
-                      console.log("AJAX: "+type);
+                      console.log("AJAX: \""+type);
                         return $.ajax({
                             url: url,
                             type: type,

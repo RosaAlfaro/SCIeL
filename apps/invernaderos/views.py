@@ -148,10 +148,10 @@ class SensoresListView(LoginRequiredMixin, ListView):
         sensores = Sensor.objects.all()
         invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
         datos = []
-        for sensor in sensores:
-            if sensor.id_dispositivo in invernaderos:
-                if not sensor in datos:
-                    datos.append(sensor)
+        for invernadero in invernaderos:
+            result = sensores.filter(id_invernadero=invernadero.id_invernadero)
+            for sensor in result:
+                datos.append(sensor)
         context = datos
         return context
     
@@ -181,6 +181,11 @@ class ActuadoresListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(ActuadoresListView, self).get_context_data(**kwargs)
         return context
+
+
+class MonitorearView(LoginRequiredMixin, ListView):
+    model = Medicion
+    template_name = 'invernaderos/monitorearInvernaderos.html'
 
 def editar_invernadero(request):
     id_invernadero = request.GET['id_invernadero']

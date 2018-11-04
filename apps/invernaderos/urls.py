@@ -52,6 +52,11 @@ urlpatterns = [
         'sign-out/',
         views.SignOutView.as_view(),
         name='sign-out'
+    ),
+    path(
+        'monitorear/',
+        views.MonitorearView.as_view(),
+        name = 'monitorear'
     )
 ]
 
