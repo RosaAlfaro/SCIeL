@@ -8,6 +8,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.forms.models import model_to_dict
+from django.template import loader
 from django.urls import reverse_lazy
 from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login
@@ -67,7 +68,7 @@ class InvernaderosListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        context = Invernadero.objects.all().filter(id_usuario=user.id)
+        context = Invernadero.objects.all().filter(id_usuario=user.id).filter(is_baja=False)
         return context
     
     def get_context_data(self, **kwargs):
@@ -83,7 +84,7 @@ class CultivosListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        context = Cultivo.objects.all().filter(id_usuario=user.id)
+        context = Cultivo.objects.all().filter(id_usuario=user.id).filter(is_baja=False)
         return context
     
     def get_context_data(self, **kwargs):
@@ -99,8 +100,8 @@ class ParametrosListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
-        parametros = Parametro.objects.all()
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id).filter(is_baja=False)
+        parametros = Parametro.objects.all().filter(is_baja=False)
         datos = []
         for invernadero in invernaderos:
             result = parametros.filter(id_invernadero=invernadero.id_invernadero)
@@ -122,8 +123,8 @@ class DispositivosListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        dispositivos = Dispositivo.objects.all()
-        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
+        dispositivos = Dispositivo.objects.all().filter(is_baja=False)
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id).filter(is_baja=False)
         datos = []
         for invernadero in invernaderos:
             if invernadero.id_dispositivo in dispositivos:
@@ -145,8 +146,8 @@ class SensoresListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        sensores = Sensor.objects.all()
-        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
+        sensores = Sensor.objects.all().filter(is_baja=False)
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id).filter(is_baja=False)
         datos = []
         for invernadero in invernaderos:
             result = sensores.filter(id_invernadero=invernadero.id_invernadero)
@@ -168,8 +169,8 @@ class ActuadoresListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
-        actuadores = Actuador.objects.all()
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id).filter(is_baja=False)
+        actuadores = Actuador.objects.all().filter(is_baja=False)
         datos = []
         for invernadero in invernaderos:
             result = actuadores.filter(id_invernadero=invernadero.id_invernadero)
@@ -182,26 +183,22 @@ class ActuadoresListView(LoginRequiredMixin, ListView):
         context = super(ActuadoresListView, self).get_context_data(**kwargs)
         return context
 
-
-class MonitorearView(LoginRequiredMixin, TemplateView):
-    model = Medicion
-    template_name = 'invernaderos/monitorearInvernaderos.html'
-    context_object_name = 'datos'
-
-    def get_queryset(self):
-        user = self.request.user
-        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id)
+@login_required()
+def monitorear_invernadero(request, id_invernadero):
+    if request.method == 'GET':
+        user = request.user
+        invernaderos = Invernadero.objects.all().filter(id_usuario=user.id).filter(is_baja=False)
         cant_invernaderos = invernaderos.count()
 
         datos = []
-        dispositivos = Dispositivo.objects.all()
+        dispositivos = Dispositivo.objects.all().filter(is_baja=False)
         for invernadero in invernaderos:
             if invernadero.id_dispositivo in dispositivos:
                 if not invernadero.id_dispositivo in datos:
                     datos.append(invernadero.id_dispositivo)
         cant_dispositivos = len(datos)
         
-        actuadores = Actuador.objects.all()
+        actuadores = Actuador.objects.all().filter(is_baja=False)
         datos = []
         for invernadero in invernaderos:
             result = actuadores.filter(id_invernadero=invernadero.id_invernadero)
@@ -209,7 +206,7 @@ class MonitorearView(LoginRequiredMixin, TemplateView):
                 datos.append(actuador)
         cant_actuadores = len(datos)
 
-        sensores = Sensor.objects.all()
+        sensores = Sensor.objects.all().filter(is_baja=False)
         datos = []
         for invernadero in invernaderos:
             result = sensores.filter(id_invernadero=invernadero.id_invernadero)
@@ -217,15 +214,18 @@ class MonitorearView(LoginRequiredMixin, TemplateView):
                 datos.append(sensor)
         cant_sensores = len(datos)
 
-        parametros = Parametro.objects.all()
+        parametros = Parametro.objects.all().filter(is_baja=False)
         for invernadero in invernaderos:
             result = parametros.filter(id_invernadero=invernadero.id_invernadero)
             for parametro in result:
                 datos.append(parametro)
         cant_parametros = len(datos)
-        
-        cant_cultivos = Cultivo.objects.all().filter(id_usuario=user.id).count()
-        
+            
+        cant_cultivos = Cultivo.objects.all().filter(id_usuario=user.id).filter(is_baja=False).count()
+
+        mediciones = Medicion.objects.all().filter(id_invernadero=id_invernadero)[:20]
+        fecha = timezone.now()
+            
         context = {
             'cant_cultivos': cant_cultivos,
             'cant_parametros': cant_parametros,
@@ -233,13 +233,21 @@ class MonitorearView(LoginRequiredMixin, TemplateView):
             'cant_actuadores': cant_actuadores,
             'cant_dispositivos': cant_dispositivos,
             'cant_invernaderos': cant_invernaderos,
+            'mediciones': mediciones,
+            'fecha': fecha
         }
-        return context
 
-    def get_context_data(self, **kwargs):
-        context = super(MonitorearView, self).get_context_data(**kwargs)
-        return context
-    
+        temp = loader.get_template('invernaderos/monitorearInvernaderos.html')
+        
+        return HttpResponse(temp.render(context, request))
+    elif request.method == 'RELOAD':
+        mediciones = Medicion.objects.all().filter(id_invernadero=id_invernadero)[:20]
+        fecha = timezone.now()
+        context = {
+            'mediciones': mediciones,
+            'fecha': fecha
+        }
+        return JsonResponse(data=context, safe=True)
 
 def editar_invernadero(request):
     id_invernadero = request.GET['id_invernadero']
@@ -335,10 +343,10 @@ def invernadero(request):
         id_invernadero = request.POST['id']
 
         invernadero = Invernadero.objects.get(id_invernadero=id_invernadero)
-
+        invernadero.is_baja = True
+        invernadero.save()
         message = None
-
-        result = invernadero.delete()
+        
         if result:
             message = "El invernadero fue borrado exitosamente"
         else:
@@ -416,10 +424,10 @@ def dispositivo(request):
         id_dispositivo = request.POST['id']
 
         dispositivo = Dispositivo.objects.get(id_dispositivo=id_dispositivo)
-
+        dispositivo.is_baja = True
+        dispositivo.save()
         message = None
-
-        result = dispositivo.delete()
+        
         if result:
             message = "El dispositivo fue borrado exitosamente"
         else:

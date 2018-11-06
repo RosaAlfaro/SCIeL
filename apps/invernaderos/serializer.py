@@ -1,4 +1,4 @@
-from .models import Cultivo, Etapa, Dispositivo, Invernadero, Parametro, Actuador, Sensor, Medicion
+from .models import *
 from rest_framework import serializers
 
 
@@ -10,20 +10,6 @@ class CultivoSerializer(serializers.ModelSerializer):
             'id_cultivo',
             'nombre_cultivo',
             'periodo_cosecha'
-        )
-    
-
-class EtapaSerializer(serializers.ModelSerializer):
-
-    class Meta: 
-        model = Etapa
-        fields = (
-            'id_etapa',
-            'id_cultivo',
-            'numero_etapa',
-            'nombre_etapa',
-            'duracion',
-            'descripcion_etapa'
         )
     
 

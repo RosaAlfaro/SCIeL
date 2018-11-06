@@ -17,12 +17,13 @@ class Cultivo(models.Model):
     )
     id_usuario = models.ForeignKey(
         User,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         verbose_name='Usuario',
         help_text='Usuario al que pertenece este cultivo',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
         },
+        null=True
     )
     nombre_cultivo = models.CharField(
         max_length=45,
@@ -47,6 +48,11 @@ class Cultivo(models.Model):
         null=True, 
         blank=False,
     )
+    is_baja = models.BooleanField(
+        verbose_name='¿Está de baja?',
+        blank=False, 
+        default=False
+    )
 
     def __str__(self):
         return self.nombre_cultivo
@@ -55,81 +61,6 @@ class Cultivo(models.Model):
         ordering = ['nombre_cultivo']
         verbose_name = 'Cultivo'
         verbose_name_plural = 'Cultivos'
-
-
-class Etapa(models.Model):
-    id_etapa = models.AutoField(
-        primary_key=True,
-        verbose_name='Codigo de la etapa',
-        help_text='Identificador genérico de la Etapa',
-        error_messages={
-            'exist': 'El indentificador ya existe',
-        }
-    )
-    id_cultivo = models.ForeignKey(
-        Cultivo,
-        on_delete=models.CASCADE,
-        verbose_name='Cultivo',
-        help_text='Cultivo al que pertenece esta etapa',
-        error_messages={
-            'select': 'Debe seleccionar uno de la lista'
-        },
-        null=True, 
-        blank=True
-    )
-    numero_etapa = models.IntegerField(
-        verbose_name='Número de etapa',
-        null=True, 
-        blank=False,
-        help_text="Debe ingresar la cantidad de etapas durante el tiempo de vida del cultivo",
-        error_messages={
-            'value':'Debe ser un dato entero positivo'
-        },
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(10)
-        ]
-    )
-    nombre_etapa = models.CharField(
-        max_length=45,
-        verbose_name='Nombre de etapa',
-        help_text='Ingrese el nombre de la etapa. Ejemplo: Floración',
-        error_messages={
-            'empty': 'Este campo no debe quedar vacío'
-        },
-        null=True, 
-        blank=False
-    )
-    duracion = models.IntegerField(
-        verbose_name='Duración de la etapa',
-        null=True, 
-        blank=False,
-        help_text="Debe ingresar el tiempo que dura esta etapa",
-        error_messages={
-            'value':'Debe ser un dato entero positivo'
-        },
-        validators=[
-            MinValueValidator(0)
-        ]
-    )
-    descripcion_etapa = models.CharField(
-        max_length=150,
-        verbose_name='Descripcion de la etapa',
-        help_text='Ingrese una breve descripción de la etapa',
-        error_messages={
-            'empty': 'Este campo no debe quedar vacío'
-        },
-        null=True, 
-        blank=False
-    )
-
-    def __str__(self):
-        return self.nombre_etapa
-
-    class Meta:
-        ordering = ["id_cultivo", "numero_etapa"]
-        verbose_name = "Etapa"
-        verbose_name_plural = "Etapas"
 
 
 class Dispositivo(models.Model):
@@ -150,6 +81,11 @@ class Dispositivo(models.Model):
         },
         null=True, 
         blank=False
+    )
+    is_baja = models.BooleanField(
+        verbose_name='¿Está de baja?',
+        blank=False, 
+        default=False
     )
 
     def __str__(self):
@@ -172,7 +108,7 @@ class Invernadero(models.Model):
     )
     id_dispositivo = models.ForeignKey(
         Dispositivo,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         verbose_name='Dispositivo',
         help_text='Dispositivo que controla este invernadero',
         error_messages={
@@ -183,7 +119,7 @@ class Invernadero(models.Model):
     )
     id_usuario = models.ForeignKey(
         User,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         verbose_name='Usuario',
         help_text='Usuario al que pertenece este invernadero',
         error_messages={
@@ -221,6 +157,11 @@ class Invernadero(models.Model):
         null=True, 
         blank=False
     )
+    is_baja = models.BooleanField(
+        verbose_name='¿Está de baja?',
+        blank=False, 
+        default=False
+    )
 
     def __str__(self):
         return self.nombre_invernadero
@@ -242,7 +183,7 @@ class Parametro(models.Model):
     )
     id_invernadero = models.ForeignKey(
         Invernadero,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name='Invernadero',
         help_text='Invernadero al que se asignará este parámetro',
         error_messages={
@@ -275,6 +216,11 @@ class Parametro(models.Model):
         null=True, 
         blank=False
     )
+    is_baja = models.BooleanField(
+        verbose_name='¿Está de baja?',
+        blank=False, 
+        default=False
+    )
 
     def __str__(self):
         return self.nombre_parametro
@@ -296,7 +242,7 @@ class Actuador(models.Model):
     )
     id_dispositivo = models.ForeignKey(
         Dispositivo,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name='Dispositivo',
         help_text='Dispositivo que se asociará a este actuador',
         error_messages={
@@ -307,7 +253,7 @@ class Actuador(models.Model):
     )
     id_invernadero = models.ForeignKey(
         Invernadero,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name='Invernadero',
         help_text='Invernadero al que se asignará este parámetro',
         error_messages={
@@ -325,6 +271,11 @@ class Actuador(models.Model):
         },
         null=True, 
         blank=False
+    )
+    is_baja = models.BooleanField(
+        verbose_name='¿Está de baja?',
+        blank=False, 
+        default=False
     )
 
     def __str__(self):
@@ -347,7 +298,7 @@ class Sensor(models.Model):
     )
     id_dispositivo = models.ForeignKey(
         Dispositivo,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name='Dispositivo',
         help_text='Dispositivo asociado a este sensor',
         error_messages={
@@ -358,7 +309,7 @@ class Sensor(models.Model):
     )
     id_invernadero = models.ForeignKey(
         Invernadero,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name='Invernadero',
         help_text='Invernadero al que se asignará este parámetro',
         error_messages={
@@ -376,6 +327,11 @@ class Sensor(models.Model):
         },
         null=True, 
         blank=False
+    )
+    is_baja = models.BooleanField(
+        verbose_name='¿Está de baja?',
+        blank=False, 
+        default=False
     )
 
     def __str__(self):
@@ -398,7 +354,7 @@ class Medicion(models.Model):
     )
     id_invernadero = models.ForeignKey(
         Invernadero,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         verbose_name='Invernadero',
         help_text='Invernadero al que se le realizó la medición',
         error_messages={
@@ -409,7 +365,7 @@ class Medicion(models.Model):
     )
     id_parametro = models.ForeignKey(
         Parametro,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         verbose_name='Parámetro',
         help_text='Parámetro con el que se comparará esta medición',
         error_messages={
@@ -420,7 +376,7 @@ class Medicion(models.Model):
     )
     id_sensor = models.ForeignKey(
         Sensor,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         verbose_name='Sensor',
         help_text='Sensor con el que se realizó esta medición',
         error_messages={
@@ -431,7 +387,7 @@ class Medicion(models.Model):
     )
     id_actuador = models.ForeignKey(
         Actuador,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         verbose_name='Actuador',
         help_text='Actuador que responderá a dicha medición',
         error_messages={
@@ -483,6 +439,6 @@ class Medicion(models.Model):
         return str(self.fecha_medicion)
 
     class Meta:
-        ordering = ["fecha_medicion","id_invernadero", "id_sensor", "id_parametro", "id_actuador"]
+        ordering = ["id_invernadero", "fecha_medicion", "id_sensor", "id_parametro", "id_actuador"]
         verbose_name = "Medicion"
         verbose_name_plural = "Mediciones"

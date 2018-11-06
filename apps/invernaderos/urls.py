@@ -13,6 +13,16 @@ urlpatterns = [
         views.InvernaderosListView.as_view(),
         name='invernaderos'
     ),
+    re_path(
+        r'^monitorear/(?P<id_invernadero>[0-9]+)/',
+        views.monitorear_invernadero,
+        name = 'monitorear'
+    ),
+    path(
+        'monitorear/',
+        views.monitorear_invernadero,
+        name = 'monitorear'
+    ),
     path(
         'cultivos/',
         views.CultivosListView.as_view(),
@@ -57,12 +67,5 @@ urlpatterns = [
         'sign-out/',
         views.SignOutView.as_view(),
         name='sign-out'
-    ),
-    path(
-        'monitorear/',
-        views.MonitorearView.as_view(),
-        name = 'monitorear'
     )
 ]
-
-urlpatterns = format_suffix_patterns(urlpatterns)

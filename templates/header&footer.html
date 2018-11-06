@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}
 {% endblock %}
+
 {% block header %}
 <nav class="navbar navbar-expand static-top" style="background-color: #212529 !important">
 
@@ -32,10 +33,12 @@
         {% endif %}
       </nav>
   {% endblock header%}
+
   {% block content %}
-  {% block sidebar %}
-  {% endblock sidebar %}
-  {% block tables %}
-  {% endblock tables %}
+    {% block sidebar %}
+    {% endblock sidebar %}
+  
+    {% block tables %}
+    {% endblock tables %}
 
   {% endblock content %}

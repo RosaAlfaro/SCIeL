@@ -15,7 +15,3 @@ admin.site.register(Dispositivo)
 admin.site.register(Medicion)
 
 admin.site.register(Actuador)
-
-admin.site.register(Etapa)
-
-

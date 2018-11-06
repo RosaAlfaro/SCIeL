@@ -7,17 +7,17 @@
       <div class="card card-login mx-auto bg-dark view overlay">
         <div class="card-header text-center" style="color:whitesmoke !important;">
           <h3 class="h5">
-              <img class="img-fluid d-block mx-auto mb-4" src="{% static 'media/image/logo2.png' %}" alt="" width="250" height="250" style="padding-top: 0.5rem; padding-bottom: 0.3rem;">
-              Sistema para el Control de Invernaderos en Línea - SCIeL
+            <img class="img-fluid d-block mx-auto mb-4" src="{% static 'media/image/logo2.png' %}" alt="" width="250" height="250" style="padding-top: 0.5rem; padding-bottom: 0.3rem;">
+            Sistema para el Control de Invernaderos en Línea - SCIeL
           </h3>
           {% if form.message %}
           <div class="alert alert-danger in alert-dismissible">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <strong>  
-                <p>{{form.message}}</p>
-              </strong>
-            </div>
-          {% endif %}
+            <strong>  
+              <p>{{form.message}}</p>
+            </strong>
+          </div>
+        {% endif %}
       </div>
       <div class="card-body form-group form-label-group text-center">
         <strong>
