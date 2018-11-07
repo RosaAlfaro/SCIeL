@@ -17,7 +17,8 @@ class Cultivo(models.Model):
     )
     nombre_cultivo = models.CharField(
         max_length=45,
-        null=False,
+        null=True, 
+        blank=True,
         verbose_name='Nombre del cultivo',
         help_text='Nombre de la planta a cultivar',
         error_messages={
@@ -33,7 +34,9 @@ class Cultivo(models.Model):
         validators=[
             MinValueValidator(0),
             MaxValueValidator(1000)
-        ]        
+        ],
+        null=True, 
+        blank=True,
     )
 
     def __str__(self):
@@ -61,11 +64,14 @@ class Etapa(models.Model):
         help_text='Cultivo al que pertenece esta etapa',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
     )
     numero_etapa = models.IntegerField(
         verbose_name='Número de etapa',
-        null=False,
+        null=True, 
+        blank=True,
         help_text="Debe ingresar la cantidad de etapas durante el tiempo de vida del cultivo",
         error_messages={
             'value':'Debe ser un dato entero positivo'
@@ -81,11 +87,14 @@ class Etapa(models.Model):
         help_text='Ingrese el nombre de la etapa. Ejemplo: Floración',
         error_messages={
             'empty': 'Este campo no debe quedar vacío'
-        }
+        },
+        null=True, 
+        blank=True
     )
     duracion = models.IntegerField(
         verbose_name='Duración de la etapa',
-        null=False,
+        null=True, 
+        blank=True,
         help_text="Debe ingresar el tiempo que dura esta etapa",
         error_messages={
             'value':'Debe ser un dato entero positivo'
@@ -101,6 +110,8 @@ class Etapa(models.Model):
         error_messages={
             'empty': 'Este campo no debe quedar vacío'
         },
+        null=True, 
+        blank=True
     )
 
     def __str__(self):
@@ -127,7 +138,9 @@ class Dispositivo(models.Model):
         help_text='Dele un nombre al dispositivo a usar en sus invernaderos',
         error_messages={
             'empty': 'Este campo no debe quedar vacío'
-        }
+        },
+        null=True, 
+        blank=True
     )
 
     def __str__(self):
@@ -155,16 +168,20 @@ class Invernadero(models.Model):
         help_text='Dispositivo que controla este invernadero',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
     )
     id_usuario = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.DO_NOTHING,
         verbose_name='Usuario',
         help_text='Usuario al que pertenece este invernadero',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
     )
     id_cultivo = models.ManyToManyField(
         Cultivo,
@@ -172,7 +189,7 @@ class Invernadero(models.Model):
         help_text='Cultivo que se cosechará en este invernadero',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
     )
     nombre_invernadero = models.CharField(
         max_length=45,
@@ -180,15 +197,19 @@ class Invernadero(models.Model):
         help_text='Asignele un nombre cualquiera al invernadero',
         error_messages={
             'empty': 'Este campo no debe quedar vacío'
-        }
+        },
+        null=True, 
+        blank=True
     )
     ubicacion = models.CharField(
-        max_length=15,
+        max_length=23,
         verbose_name='Ubicacion del invernadero',
         help_text='Ingrese la ubicación del invernadero',
         error_messages={
             'empty': 'Este campo no debe quedar vacío'
-        }
+        },
+        null=True, 
+        blank=True
     )
 
     def __str__(self):
@@ -216,7 +237,9 @@ class Parametro(models.Model):
         help_text='Invernadero al que se asignará este parámetro',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
     )
     nombre_parametro = models.CharField(
         max_length=45,
@@ -224,7 +247,9 @@ class Parametro(models.Model):
         help_text='Ingrese el nombre del parámetro a medir',
         error_messages={
             'empty': 'Este campo no debe quedar vacío'
-        }
+        },
+        null=True, 
+        blank=True
     )
     magnitud_referencia = models.DecimalField(
         verbose_name='Magnitud del Parámetro Base',
@@ -236,8 +261,9 @@ class Parametro(models.Model):
         },
         validators=[
             MinValueValidator(0)
-        ]
-
+        ],
+        null=True, 
+        blank=True
     )
 
     def __str__(self):
@@ -265,7 +291,20 @@ class Actuador(models.Model):
         help_text='Dispositivo que se asociará a este actuador',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
+    )
+    id_invernadero = models.ForeignKey(
+        Invernadero,
+        on_delete=models.CASCADE,
+        verbose_name='Invernadero',
+        help_text='Invernadero al que se asignará este parámetro',
+        error_messages={
+            'select': 'Debe seleccionar uno de la lista'
+        },
+        null=True, 
+        blank=True
     )
     nombre_actuador = models.CharField(
         max_length=45,
@@ -273,7 +312,9 @@ class Actuador(models.Model):
         help_text='Ingrese el nombre del actuador a usar',
         error_messages={
             'empty': 'Este campo no debe quedar vacío'
-        }
+        },
+        null=True, 
+        blank=True
     )
 
     def __str___(self):
@@ -301,7 +342,20 @@ class Sensor(models.Model):
         help_text='Dispositivo asociado a este sensor',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
+    )
+    id_invernadero = models.ForeignKey(
+        Invernadero,
+        on_delete=models.CASCADE,
+        verbose_name='Invernadero',
+        help_text='Invernadero al que se asignará este parámetro',
+        error_messages={
+            'select': 'Debe seleccionar uno de la lista'
+        },
+        null=True, 
+        blank=True
     )
     nombre_sensor = models.CharField(
         max_length=45,
@@ -309,7 +363,9 @@ class Sensor(models.Model):
         help_text='Ingrese un nombre para este sensor',
         error_messages={
             'empty': 'Este campo no debe quedar vacío'
-        }
+        },
+        null=True, 
+        blank=True
     )
 
     def __str__(self):
@@ -337,7 +393,9 @@ class Medicion(models.Model):
         help_text='Invernadero al que se le realizó la medición',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
     )
     id_parametro = models.ForeignKey(
         Parametro,
@@ -346,7 +404,9 @@ class Medicion(models.Model):
         help_text='Parámetro con el que se comparará esta medición',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
     )
     id_sensor = models.ForeignKey(
         Sensor,
@@ -355,17 +415,20 @@ class Medicion(models.Model):
         help_text='Sensor con el que se realizó esta medición',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
     )
     id_actuador = models.ForeignKey(
         Actuador,
         on_delete=models.DO_NOTHING,
-        null=True,
         verbose_name='Actuador',
         help_text='Actuador que responderá a dicha medición',
         error_messages={
             'select': 'Debe seleccionar uno de la lista'
-        }
+        },
+        null=True, 
+        blank=True
     )
     magnitud_medicion = models.DecimalField(
         decimal_places=2,
@@ -377,7 +440,9 @@ class Medicion(models.Model):
         },
         validators=[
             MinValueValidator(0)
-        ]
+        ],
+        null=True, 
+        blank=True
     )
     fecha_medicion = models.DateTimeField(
         verbose_name='Fecha de lectura',
@@ -385,7 +450,9 @@ class Medicion(models.Model):
         help_text='Momento en el que se realizó la medición',
         error_messages={
             'value': 'La fecha por defecto es la de hoy'
-        }
+        },
+        null=True, 
+        blank=True
     )
     is_activo = models.BooleanField(
         default=False,
@@ -393,7 +460,9 @@ class Medicion(models.Model):
         help_text='Respuesta del dispositivo',
         error_messages={
             'value': 'Debe ser un atributo boleano'
-        }
+        },
+        null=True, 
+        blank=True
     )
 
     def take(self):

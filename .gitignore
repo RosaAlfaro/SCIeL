@@ -1,2 +1,9 @@
 
+<<<<<<< HEAD
 *.sqlite3
+=======
+apps/invernaderos/serializer.py
+*.pyc
+>>>>>>> 9cb7870ac587b0bb1420b8d36d679b7be641a4b3
+*.pyc
+*.pyc
